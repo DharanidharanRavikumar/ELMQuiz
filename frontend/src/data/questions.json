@@ -1,0 +1,595 @@
+[
+    {
+      "id": "q1",
+      "part":"part1",
+       "category": "selfEfficacy",
+      "question": "I can always manage to solve difficult problems if I try hard enough.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q2",
+      "part":"part1",
+      "category": "selfEfficacy",
+      "question": "If someone opposes me, I can find the means and ways to get what I want.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q3",
+      "part":"part1",
+      "category": "selfEfficacy",
+      "question": "I am confident and invest the necessary effort that I could deal efficiently with unexpected events.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q4",
+      "part":"part1",
+      "category": "selfEfficacy",
+      "question": "I can remain calm when facing difficulties because I can rely on my coping abilities.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q5",
+      "part":"part2",
+       "category": "learningStyle",
+      "question": "When trying to remember someone’s telephone number, it helps me to get a picture of it in my mind.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q6",
+      "part":"part2",
+      "category": "learningStyle",
+      "question": "Using flashcards helps me to retain material for tests.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q7",
+      "part":"part2",
+      "category": "learningStyle",
+      "question": "It’s easy for me to understand a joke when someone tells me.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+      
+    },
+    {
+      "id": "q8",
+      "part":"part2",
+      "category": "learningStyle",
+      "question": "It helps to use my finger as a pointer when reading to keep my place.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q9",
+      "part":"part2",
+      "category": "learningStyle",
+      "question": "I think better when I have the freedom to move around.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q10",
+      "part":"part2",
+      "category": "learningStyle",
+      "question": "I remember things that I hear, rather than things that I see or touch.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q11",
+      "part":"part3",
+      "category": "collegeReadiness",
+      "question": "Do you have a system for taking notes, preparing for tests and exams?",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id":"q12",
+      "part":"part3",
+      "category": "collegeReadiness",
+      "question": "I'm usually good at prioritizing my time to get my studying done.",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id":"q13",
+      "part":"part3",
+       "category": "collegeReadiness",
+      "question": "I would still like school even if my friends weren't there.",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id": "q14",
+      "part":"part3",
+      "category": "collegeReadiness",
+      "question": "I think about the consequences before I act.",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id":"q15",
+      "part":"part3",
+       "category": "collegeReadiness",
+      "question": "I would be willing to give up my extracurricular interest to make excellent grades.",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id": "q16",
+      "part":"part3",
+       "category": "collegeReadiness",
+      "question": "Do you know that you can succeed?",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id": "q17",
+      "part":"part3",
+       "category": "collegeReadiness",
+      "question": "I see many benefits in going to college.",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id": "q18",
+      "part":"part3",
+       "category": "collegeReadiness",
+      "question": "I want to go to college as much as my parents want me to go.",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id": "q19",
+      "part":"part3",
+       "category": "collegeReadiness",
+      "question": "The thought of college doesn't really scare me.",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id": "q20",
+      "part":"part3",
+       "category": "collegeReadiness",
+      "question": "I am ready to begin thinking about my future and planning for college.",
+      "options": [
+        { "text": "Yes", "score": 1 },
+        { "text": "No", "score": 0 }
+      ]
+    },
+    {
+      "id": "q21",
+      "part":"part4",
+      "category": "temperament",
+      "question": "I have more good qualities than bad ones.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q22",
+      "part":"part4",
+      "category": "temperament",
+      "question": "I can be quite impatient with other people.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q23",
+      "part":"part4",
+      "category": "temperament",
+      "question": "I fear that my important relationships will end somehow.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q24",
+      "part":"part4",
+      "category": "temperament",
+      "question": "I feel confident in my ability to size up and deal with any situation.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q25",
+      "part":"part4",
+      "category": "temperament",
+      "question": "I have an excitable and quick temper.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q26",
+      "part":"part5",
+      "category": "socialSupport",
+      "question": "With whom can you totally be yourself?",
+      "options": [
+        { "text": "Family", "score": 1 },
+        { "text": "Friends", "score": 2 },
+        { "text": "Social Media", "score": 3 }
+      ]
+    },
+    {
+      "id": "q27",
+      "part":"part5",
+      "category": "socialSupport",
+      "question": "Whom can you really count on to listen to you when you need to talk?",
+      "options": [
+        { "text": "Family", "score": 1 },
+        { "text": "Friends", "score": 2 },
+        { "text": "Social Media", "score": 3 }
+      ]
+    },
+    {
+      "id": "q28",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I hope to become a leader in my career field.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q29",
+      "part":"part6",
+       "category": "aspiration",
+      "question": "I do not plan to devote energy to getting promoted to a leadership position in the organization or business in which I am working.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q30",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I want to be among the very best in my field.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q31",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "Becoming a leader in my job is not at all important to me.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q32",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "When I am established in my career, I would like to manage other employees.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q33",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I plan to reach the highest level of education in my field.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q34",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I want to have responsibility for the future direction of my organization or business.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q35",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I want my work to have a lasting impact on my field.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q36",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I aspire to have my contributions at work recognized by my employer.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q37",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I will pursue additional training in my occupational area of interest.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q38",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I will always be knowledgeable about recent advances in my field.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q39",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "Attaining leadership status in my career is not that important to me.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q40",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "Being outstanding at what I do at work is very important to me.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q41",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I know I will work to remain current regarding knowledge in my field.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q42",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I hope to move up to a leadership position in my organization or business.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q43",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I will attend conferences annually to advance my knowledge.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q44",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I know that I will be recognized for my accomplishments in my field.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q45",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "Even if not required, I would take continuing education courses to become more knowledgeable.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q46",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I would pursue an advanced education program to gain specialized knowledge in my field.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q47",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "Achieving in my career is not at all important to me.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q48",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "I plan to obtain many promotions in my organization or business.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q49",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "Being one of the best in my field is not important to me.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+    },
+    {
+      "id": "q50",
+      "part":"part6",
+      "category": "aspiration",
+      "question": "Every year, I will prioritize involvement in continuing education to advance my career.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+  },
+  {
+    "id": "q51",
+    "part":"part6",
+    "category": "aspiration",
+      "question": "I plan to rise to the top leadership position of my organization or business.",
+      "options": [
+        { "text": "Not at all true", "score": 1 },
+        { "text": "Slightly true", "score": 2 },
+        { "text": "Moderately true", "score": 3 },
+        { "text": "Very true", "score": 4 }
+      ]
+  }
+]
+  
+  
