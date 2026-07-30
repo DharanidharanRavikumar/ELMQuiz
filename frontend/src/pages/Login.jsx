@@ -16,61 +16,101 @@ const Login = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
-  const handleRoleSelection = (selectedRole) => {
-    setRole(selectedRole);
-  };
-
   const handleLogin = () => {
     if (!userId || !password || captcha !== captchaText) {
       alert("Invalid credentials or incorrect captcha!");
       return;
     }
-
     login(role);
-
     setTimeout(() => {
-      if (role === "admin") {
-        navigate("/admin");
-      } else if (role === "student") {
-        navigate("/home");
-      }
+      if (role === "admin") navigate("/admin");
+      else if (role === "student") navigate("/home");
     }, 0);
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
+    <div className="login-page">
+      <div className="login-bg-orb login-bg-orb-1" />
+      <div className="login-bg-orb login-bg-orb-2" />
+      <div className="login-bg-orb login-bg-orb-3" />
 
-      {!role ? (
-        <div className="role-selection">
-          <button onClick={() => handleRoleSelection("admin")} className="role-btn">Login as Admin</button>
-          <button onClick={() => handleRoleSelection("student")} className="role-btn">Login as Student</button>
+      <div className="login-card">
+        <div className="login-logo">
+          <div className="login-logo-icon">🧠</div>
+          <span className="login-logo-text">ELM Quiz</span>
         </div>
-      ) : (
-        <div className="login-form">
-          <h3>{role === "admin" ? "Admin Login" : "Student Login"}</h3>
-          <input
-            type="text"
-            placeholder="User ID"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <p>Captcha: <strong>{captchaText}</strong></p>
-          <input
-            type="text"
-            placeholder="Enter Captcha"
-            value={captcha}
-            onChange={(e) => setCaptcha(e.target.value)}
-          />
-          <button onClick={handleLogin} className="login-btn">Login</button>
-        </div>
-      )}
+
+        {!role ? (
+          <>
+            <h1 className="login-title">Welcome back</h1>
+            <p className="login-subtitle">Select your role to continue</p>
+            <div className="role-grid">
+              <button className="role-btn" onClick={() => setRole("admin")}>
+                <span className="role-icon">🛡️</span>
+                Admin
+              </button>
+              <button className="role-btn" onClick={() => setRole("student")}>
+                <span className="role-icon">🎓</span>
+                Student
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h1 className="login-title">
+              {role === "admin" ? "Admin Login" : "Student Login"}
+            </h1>
+            <p className="login-subtitle">Enter your credentials to access the platform</p>
+
+            <div className="login-form">
+              <div className="form-group">
+                <label className="form-label">User ID</label>
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="Enter your user ID"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input
+                  className="form-input"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Verify Captcha</label>
+                <div className="captcha-box">
+                  <span className="captcha-text">{captchaText}</span>
+                </div>
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="Type the captcha above"
+                  value={captcha}
+                  onChange={(e) => setCaptcha(e.target.value)}
+                  style={{ marginTop: "8px" }}
+                />
+              </div>
+
+              <button className="login-btn" onClick={handleLogin}>
+                Sign In →
+              </button>
+
+              <button className="back-link" onClick={() => setRole(null)}>
+                ← Choose a different role
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

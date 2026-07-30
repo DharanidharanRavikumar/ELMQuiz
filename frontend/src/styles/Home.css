@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.home-page {
+  min-height: 100vh;
+  background: #0A1628;
+  font-family: 'DM Sans', sans-serif;
+  color: #fff;
+  position: relative;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+}
+
+.home-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+.home-bg-orb-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(55,138,221,0.15) 0%, transparent 70%);
+  top: -150px; right: -150px;
+}
+.home-bg-orb-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(24,95,165,0.12) 0%, transparent 70%);
+  bottom: 0; left: -100px;
+}
+
+.home-nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 48px;
+}
+
+.home-nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.home-nav-badge {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(55,138,221,0.9);
+  background: rgba(55,138,221,0.12);
+  border: 1px solid rgba(55,138,221,0.25);
+  padding: 6px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.home-main {
+  position: relative;
+  z-index: 10;
+  max-width: 720px;
+  margin: 60px auto 0;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.home-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #85B7EB;
+  margin-bottom: 20px;
+  padding: 6px 16px;
+  background: rgba(24,95,165,0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(24,95,165,0.2);
+}
+
+.home-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.home-title-accent {
+  background: linear-gradient(135deg, #378ADD, #85B7EB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-desc {
+  font-size: 17px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.5);
+  max-width: 540px;
+  margin: 0 auto 40px;
+}
+
+.home-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 44px;
+}
+
+.home-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.home-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #378ADD;
+}
+
+.home-stat-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.home-stat-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255,255,255,0.1);
+}
+
+.home-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #185FA5, #378ADD);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+  margin-bottom: 20px;
+}
+
+.home-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(55,138,221,0.4);
+}
+
+.home-cta-arrow {
+  font-size: 18px;
+  transition: transform 0.2s;
+}
+
+.home-cta:hover .home-cta-arrow { transform: translateX(4px); }
+
+.home-note {
+  font-size: 13px;
+  color: rgba(255,255,255,0.25);
+}
+
+.home-cards {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 900px;
+  margin: 80px auto 0;
+  padding: 0 24px;
+}
+
+@media (max-width: 700px) {
+  .home-cards { grid-template-columns: 1fr; }
+  .home-nav { padding: 20px 24px; }
+  .home-stats { gap: 20px; }
+}
+
+.home-feature-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 28px 24px;
+  transition: all 0.25s ease;
+}
+
+.home-feature-card:hover {
+  border-color: rgba(55,138,221,0.3);
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.06);
+}
+
+.home-feature-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.home-feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.home-feature-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.6;
+}

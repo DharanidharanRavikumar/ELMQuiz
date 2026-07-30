@@ -1,91 +1,56 @@
 const express = require("express");
 const scoringHelper = require("../utils/scoringHelper");
 const determineScoreRange = require("../utils/determineScoreRange");
-const Report = require("../models/Report"); // Import MongoDB Model
+const Report = require("../models/Report");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 
-
 const router = express.Router();
 
-// **🔹 Function to return the correct pronoun based on gender**
+// ─── Pronoun helper ──────────────────────────────────────────────────────────
 const getPronoun = (gender, type) => {
   const pronouns = {
-    Male: { heShe: "He", hisHer: "his", himHer: "him", himselfHerself: "himself" },
-    Female: { heShe: "She", hisHer: "her", himHer: "her", himselfHerself: "herself" },
-    Other: { heShe: "They", hisHer: "their", himHer: "them", himselfHerself: "themselves" },
+    Male:   { heShe: "He",   hisHer: "his",   himHer: "him",  himselfHerself: "himself"   },
+    Female: { heShe: "She",  hisHer: "her",   himHer: "her",  himselfHerself: "herself"   },
+    Other:  { heShe: "They", hisHer: "their", himHer: "them", himselfHerself: "themselves" },
   };
-
-  return pronouns[gender]?.[type] || pronouns["Other"][type]; // Default to "Other" if gender is unknown
+  return pronouns[gender]?.[type] || pronouns["Other"][type];
 };
 
 const getDescription = (category, subCategory, range, gender) => {
-  if (!range) {
-    console.warn(`❌ Missing range for ${category} -> ${subCategory || "main"}`);
-    return `Description not found for ${category} -> ${subCategory || "main"}`;
-  }
-
-  let fixedRange = range.charAt(0).toUpperCase() + range.slice(1).toLowerCase(); // Ensures case consistency
-
-  
-
-  if (category === "aspiration" && subCategory === "education") {
-    subCategory = "educational"; // Correcting the key to match categoryDescriptions
-  }
-
-  let description;
-  if (subCategory) {
-    description = categoryDescriptions?.[category]?.[subCategory]?.[fixedRange];
-  } else {
-    description = categoryDescriptions?.[category]?.[fixedRange];
-  }
-
-  if (!description) {
-    console.warn(`❌ Missing description for ${category} -> ${subCategory || "main"} -> ${fixedRange}`);
-    return `Description not found for ${category} -> ${subCategory || "main"} -> ${fixedRange}`;
-  }
-
-  const pronounReplacements = {
-    he: getPronoun(gender, "heShe"),
-    his: getPronoun(gender, "hisHer"),
-    him: getPronoun(gender, "himHer"),
-    himself: getPronoun(gender, "himselfHerself"),
+  if (!range) return `Description not found for ${category} -> ${subCategory || "main"}`;
+  let fixedRange = range.charAt(0).toUpperCase() + range.slice(1).toLowerCase();
+  if (category === "aspiration" && subCategory === "education") subCategory = "educational";
+  let description = subCategory
+    ? categoryDescriptions?.[category]?.[subCategory]?.[fixedRange]
+    : categoryDescriptions?.[category]?.[fixedRange];
+  if (!description) return `Description not found for ${category} -> ${subCategory || "main"} -> ${fixedRange}`;
+  const rep = {
+    he: getPronoun(gender, "heShe"), his: getPronoun(gender, "hisHer"),
+    him: getPronoun(gender, "himHer"), himself: getPronoun(gender, "himselfHerself"),
   };
-
-  Object.keys(pronounReplacements).forEach((key) => {
-    const regex = new RegExp(`\\b${key}\\b`, "gi");
-    description = description.replace(regex, pronounReplacements[key]);
+  Object.keys(rep).forEach(k => {
+    description = description.replace(new RegExp(`\\b${k}\\b`, "gi"), rep[k]);
   });
-
   return description;
 };
 
-
-// **🔹 Function to determine the social support description**
 const getSocialSupportDescription = (supportData, gender) => {
-  let selectedSources = [];
-  if (supportData.family === "High") selectedSources.push("family");
-  if (supportData.friends === "High") selectedSources.push("friends");
-  if (supportData.socialMedia === "High") selectedSources.push("socialMedia");
-
-  if (selectedSources.length === 0) {
-    return `${getPronoun(gender, "heShe")} has limited social support and may benefit from expanding ${getPronoun(gender, "hisHer")} network.`;
-  }
-
-  const key = selectedSources.sort().join("And");
-  let description = categoryDescriptions.socialSupport[key];
-
-  if (!description) {
-    console.warn(`❌ Missing Social Support Description for key: ${key}`);
-    return "Social Support description not found.";
-  }
-
-  return description
+  let sel = [];
+  if (supportData.family === "High") sel.push("family");
+  if (supportData.friends === "High") sel.push("friends");
+  if (supportData.socialMedia === "High") sel.push("socialMedia");
+  if (sel.length === 0) return `${getPronoun(gender, "heShe")} has limited social support and may benefit from expanding ${getPronoun(gender, "hisHer")} network.`;
+  const key = sel.sort().join("And");
+  let desc = categoryDescriptions.socialSupport[key];
+  if (!desc) return "Social Support description not found.";
+  return desc
     .replace(/\bHe\b/g, getPronoun(gender, "heShe"))
     .replace(/\bhis\b/g, getPronoun(gender, "hisHer"))
     .replace(/\bhim\b/g, getPronoun(gender, "himHer"))
     .replace(/\bhimself\b/g, getPronoun(gender, "himselfHerself"));
 };
+
 const categoryDescriptions = {
   selfEfficacy: {
     high: "His score on the self-efficacy measure indicates a high level of self-efficacy. He has a strong sense of self-confidence, is more capable of self-evaluation and self-awareness, and has the willingness to take risks or step outside of his comfort zone.",
@@ -93,219 +58,562 @@ const categoryDescriptions = {
     low: "His score on the self-efficacy measure indicates a low level of self-efficacy. So, he avoids challenging tasks and believes that difficult tasks and situations are beyond his capabilities, only focusing on personal failings and negative outcomes. Due to low self-efficacy, he quickly loses his confidence in personal abilities.",
   },
   learningStyle: {
-    all: "His scores indicate that he is efficient in all three learning styles - visual, auditory, and kinesthetic. He doesn’t have any preferential way in which he absorbs, processes, comprehends, and retains information. He has widespread recognition in any classroom management strategy.",
+    all: "His scores indicate that he is efficient in all three learning styles - visual, auditory, and kinesthetic. He doesn't have any preferential way in which he absorbs, processes, comprehends, and retains information. He has widespread recognition in any classroom management strategy.",
     visual: "His scores indicate that he is a visual learner. Visual learners are individuals who prefer to take in their information visually with visual representations like maps, graphs, diagrams, charts, and others. He is able to learn by using visual aids such as PowerPoint lectures, instructional videos, flow charts, etc.",
     auditory: "His scores indicate that he is an auditory learner. Auditory learners learn best when information is presented to them via strategies that involve talking, such as lectures and group discussions. He can benefit from repeating back the lessons, having recordings of the lectures, group activities that require classmates explaining ideas, etc.",
-    kinesthetic: "His scores indicate that he is a kinesthetic learner. Kinesthetic learners are individuals who prefer to learn by doing. He enjoys a hands-on experience and is usually more in touch with reality and more connected to it, which is why he requires using tactile experience to understand something better. The best way to present new information to him is through personal experience, practice, examples, or simulations.",
-    auditoryKinesthetic: "His scores indicate that he is an auditory learner and kinesthetic learner. Auditory learners learn best when information is presented to them via strategies that involve talking, such as lectures and group discussions. Kinesthetic learners are individuals who prefer to learn by doing. He enjoys a hands-on experience and is usually more in touch with reality and more connected to it, which is why he requires using tactile experience to understand something better.",
-    visualAuditory: "His scores indicate that he is a visual and auditory learner. Visual learners are individuals who prefer to take in their information visually with visual representations like maps, graphs, diagrams, charts, and others. Auditory learners learn best when information is presented to them via strategies that involve talking, such as lectures and group discussions. He is able to learn by using visual and auditory aids such as PowerPoint lectures, instructional videos, flow charts, repeating back the lessons, having recordings of the lectures, group activities that require classmates explaining ideas, etc.",
-    visualKinesthetic: "His scores indicate that he is a visual and kinesthetic learner. Visual learners are individuals who prefer to take in their information visually with visual representations like maps, graphs, diagrams, charts, and others. Kinesthetic learners are individuals who prefer to learn by doing. He enjoys a hands-on experience and is usually more in touch with reality and more connected to it, and he is able to learn by using visual aids such as PowerPoint lectures, instructional videos, flow charts, etc.",
+    kinesthetic: "His scores indicate that he is a kinesthetic learner. Kinesthetic learners are individuals who prefer to learn by doing. He enjoys a hands-on experience and is usually more in touch with reality and more connected to it, which is why he requires using tactile experience to understand something better.",
+    auditoryKinesthetic: "His scores indicate that he is an auditory and kinesthetic learner. He learns best through talking and doing — combining discussion-based strategies with hands-on activities yields the best results.",
+    visualAuditory: "His scores indicate that he is a visual and auditory learner. He is able to learn by using visual and auditory aids such as PowerPoint lectures, instructional videos, flow charts, and recordings.",
+    visualKinesthetic: "His scores indicate that he is a visual and kinesthetic learner. He learns best through seeing and doing — visual aids combined with hands-on practice are ideal.",
   },
   collegeReadiness: {
     academicSkill: {
-      High: "He has scored high in Academic skills. An individual with a high academic skill score will be resourceful, able to work well in a team, and capable of solving issues. He can pick up new abilities. He can read and write with a high level of independence.",
+      High: "He has scored high in Academic skills. An individual with a high academic skill score will be resourceful, able to work well in a team, and capable of solving issues. He can pick up new abilities and read and write with a high level of independence.",
       Low: "He has scored low in Academic skills. Low academic skill levels are synonymous with low academic abilities. In order to do better, he can set goals, stick to routines and timetables, reward themselves for finishing challenging tasks, and manage their time effectively.",
     },
     executiveFunction: {
-      High: "In executive function of college readiness, he has scored high. An individual with a high executive function score will be well-suited to tasks requiring flexibility of thought and internal control. He has good leadership abilities and can handle life's tasks. He has skills like working memory, planning flexibility, emotional control, and time management and has the ability in initiating tasks, and is highly attentive. He can keep track of assignments, organize books/materials, and manage time independently.",
-      Low: "In executive function of college readiness, he has scored low. The individual with the lowest executive function score can strive to improve by organizing themselves, maintaining a positive outlook on themselves, taking a step-by-step approach to their work, and practicing meditation on a date night.",
+      High: "In executive function of college readiness, he has scored high. He has good leadership abilities and can handle life's tasks. He has skills like working memory, planning flexibility, emotional control, and time management.",
+      Low: "In executive function of college readiness, he has scored low. The individual can strive to improve by organizing themselves, maintaining a positive outlook, taking a step-by-step approach to their work, and practicing meditation.",
     },
     motivationConfidence: {
-      High: "In motivation and confidence of college readiness, he has scored high. The individual with the highest motivation and confidence score will be highly motivated to pursue life goals and succeed in college. He has a high desire to gain new knowledge and skills in a particular field. He is highly motivated towards the current education and is more confident in the growth of mindset in every opportunity to learn and grow academically and personally. He will also have a positive outlook on the future and be highly curious to learn new things. He can have clear set goals and believe that he can succeed.",
-      Low: "In motivation and confidence of college readiness, he has scored low. The person with the lowest motivation and confidence score will not have much confidence. He can't therefore concentrate on their objectives, regularly assess his year's goals, and learn from his successes in order to increase his drive and confidence.",
+      High: "In motivation and confidence of college readiness, he has scored high. He is highly motivated to pursue life goals and succeed in college. He has a high desire to gain new knowledge and is more confident in the growth of mindset in every opportunity to learn.",
+      Low: "In motivation and confidence of college readiness, he has scored low. He can improve by concentrating on objectives, regularly assessing yearly goals, and learning from successes to increase drive and confidence.",
     },
     postEducation: {
-      High: "In post-education of college readiness, he has scored high. In terms of post-school preparedness, he can perform well. Following education and being prepared for college, he has these abilities: critical thinking, self-control, communication, teamwork, and study skills, etc. He can invest in his own education, see the value of obtaining some type of training or education past high school, and attend based on the correct motivation.",
-      Low: "In post-education of college readiness, he has scored low. He is not prepared for college and will not be able to pay attention and is hugely non-serious in concern of studies and taking things for granted, wasting his time on unproductive activities, and his daily schedule will be based on his mood, not on priorities. Therefore, in order to improve, he can adopt a positive outlook for his post-educational future. Only then he will be able to organize their work, create a schedule that works, and manage their study space.",
+      High: "In post-education of college readiness, he has scored high. He can perform well following education and is prepared for college with abilities including critical thinking, self-control, communication, teamwork, and study skills.",
+      Low: "In post-education of college readiness, he has scored low. He is not prepared for college. To improve, he can adopt a positive outlook for his post-educational future, organize their work, create a schedule that works, and manage their study space.",
     },
   },
   temperament: {
     personallyReserved: {
       High: "He has a propensity to keep his personal emotions to himself. He is partially reluctant to let friends and acquaintances get to know him too well. He has more good qualities than bad ones.",
-      Low: "He doesn't have a propensity to keep his personal emotions to himself. He is not reluctant to let friends and acquaintances get to know him too well. He is less endowed with virtues than vices.",
+      Low: "He doesn't have a propensity to keep his personal emotions to himself. He is not reluctant to let friends and acquaintances get to know him too well.",
     },
     selfCriticism: {
-      High: "He can be quite impatient with other people and intolerant or irritable with anything that impedes or delays, restless desire for change and excitement. His tendency to engage in negative self-evaluation that results in feelings of worthlessness, failure, and guilt when expectations are not met; it was originally seen as particularly relevant to the development of depression.",
-      Low: "He cannot be quite impatient with other people and intolerant or irritable with anything that impedes or delays, restless desire for change and excitement. He does not have the tendency to engage in negative self-evaluation that results in feelings of worth, optimism, and dignity.",
+      High: "He can be quite impatient with other people and intolerant or irritable with anything that impedes or delays. His tendency to engage in negative self-evaluation results in feelings of worthlessness, failure, and guilt when expectations are not met.",
+      Low: "He cannot be quite impatient with other people. He does not have the tendency to engage in negative self-evaluation and maintains feelings of worth, optimism, and dignity.",
     },
     anxious: {
-      High: "He is anxious, worrying, and stressed. Excessive worrying may increase the risk of developing depression. When under stress, he will experience catastrophic thoughts and feel overwhelmed. He can adapt ways to manage anxiety and worrying, including learning about anxiety, mindfulness, relaxation techniques, correct breathing techniques, dietary adjustments, exercise, learning to be assertive, building self-esteem, etc.",
+      High: "He is anxious, worrying, and stressed. Excessive worrying may increase the risk of developing depression. When under stress, he will experience catastrophic thoughts and feel overwhelmed. He can adapt ways to manage anxiety including mindfulness, relaxation techniques, and dietary adjustments.",
       Low: "He is not anxious, worrying, and stressed. His emotions relating to relationships will not fluctuate very quickly.",
     },
     perfectionism: {
-      High: "He is very responsible to have high standards for himself and to be highly committed to tasks and duties. He feels confident and has the ability to size up and deal with any situation. He'll always do his best. He exudes confidence and is capable of assessing and handling any circumstance.",
-      Low: "He is not very responsible to have high standards for himself and to be highly committed to tasks and duties. He will not feel confident and has the ability to size up and deal with any situation. He doesn't exude confidence and is not capable of assessing and handling any circumstance.",
+      High: "He is very responsible and has high standards for himself with a high commitment to tasks and duties. He feels confident and has the ability to size up and deal with any situation.",
+      Low: "He is not very responsible and does not hold high standards for himself. He will not feel confident and lacks the ability to size up and deal with challenging situations.",
     },
     irritability: {
-      High: "He has the tendency to be quick-tempered and to externalize stress by becoming snappy and irritated by little things. He has a feeling of agitation, frustration, or upset easily. He might experience it in response to stressful situations. It may also be a symptom of a mental or physical health condition.",
-      Low: "He doesn't have the tendency to be quick-tempered and not to externalize stress by becoming snappy and irritated by little things.",
+      High: "He has the tendency to be quick-tempered and to externalize stress by becoming snappy and irritated by little things. He has a feeling of agitation and frustration that may also be a symptom of a mental or physical health condition.",
+      Low: "He doesn't have the tendency to be quick-tempered and does not externalize stress by becoming snappy and irritated by little things.",
     },
   },
   socialSupport: {
-    family: "He is completely free to be himself with his family. When he needs someone to listen to him, his family is the one he can actually rely on more than his friends and social media. He is less involved in social sectors because of his low communication level in terms of socialization.",
-    friends: "He is completely free to be himself with his friends. When he needs someone to listen to him, his friends are the one he can actually rely on more than his family and social media. He is more involved in social sectors because of his high communication level in terms of socialization.",
-    socialMedia: "He is completely free to be himself with social media. When he needs someone to listen to him, he uses to chat and engage himself in electronic gadgets. He can actually rely on social media more than his family and friends. He is not involved in social sectors because of his low communication level in terms of socialization. He will talk more, be more repetitive, communicate with less diverse vocabulary, and use more formal language and fewer positive emotion words.",
-    familyAndFriends: "He is completely free to be himself with his family and friends. When he needs someone to listen to him, his family and friends are the ones he can actually rely on more than social media. He is more involved in social sectors because of his high communication level in terms of socialization.",
-    friendsAndSocialMedia: "He is completely free to be himself with his friends and social media. When he needs someone to listen to him, his friends and social media are the ones he can actually rely on more than his family. He is more involved in social sectors because of his high communication level in terms of socialization.",
-    familyAndSocialMedia:"He is completely free to be himself with his family and social media. When he needs someone to listen to him, his family and social media are the ones he can actually rely on more than his friends. He is more involved in social sectors because of his high communication level in terms of socialization.",
+    family: "He is completely free to be himself with his family. When he needs someone to listen to him, his family is the one he can actually rely on more than his friends and social media.",
+    friends: "He is completely free to be himself with his friends. When he needs someone to listen to him, his friends are the ones he can actually rely on more than his family and social media.",
+    socialMedia: "He is completely free to be himself with social media. When he needs someone to listen to him, he uses electronic gadgets and social media more than his family and friends.",
+    familyAndFriends: "He is completely free to be himself with his family and friends. When he needs someone to listen to him, his family and friends are the ones he can actually rely on more than social media.",
+    friendsAndSocialMedia: "He is completely free to be himself with his friends and social media. When he needs someone to listen to him, his friends and social media are the ones he can actually rely on more than his family.",
+    familyAndSocialMedia: "He is completely free to be himself with his family and social media. When he needs someone to listen to him, his family and social media are the ones he can actually rely on more than his friends.",
   },
   aspiration: {
     leadership: {
-      High: "He scored 12 in leadership aspiration which advocates that he has a strong ambition and dedication to assume leadership roles and have a beneficial impact on a community or organization. He frequently demonstrates traits and attributes such as resilience, teamwork, emotional intelligence, visionary thinking, drive, ambition, effective communication, flexibility, and continual learning. He intentionally focuses on positively influencing the capacity to flourish in his professional and personal life and to strive to perform at their best.",
-      Moderate: "He scored 12 in leadership aspiration which advocates that he has moderate leadership aspirations. He has an interest in taking on leadership roles, but perhaps not at the highest or most intense level. This could mean he is open to leadership opportunities and responsibilities, but he may not be actively seeking out executive or top-tier management positions.",
-      Low: "He scored 12 in leadership aspiration which advocates that he has low leadership aspirations, a lack of desire or ambition to take on leadership roles or responsibilities within an organization or community. This can manifest in various ways, such as a reluctance to seek out leadership positions, a lack of interest in developing leadership skills, or a preference for staying within a more passive or follower role. He may have a lack of confidence, fear of failure, comfort zone, unawareness of potentials, etc.",
+      High: "He has a strong ambition and dedication to assume leadership roles and have a beneficial impact on a community or organization. He frequently demonstrates traits such as resilience, teamwork, emotional intelligence, visionary thinking, drive, and effective communication.",
+      Moderate: "He has moderate leadership aspirations. He has an interest in taking on leadership roles, but perhaps not at the highest or most intense level. He is open to leadership opportunities but may not be actively seeking executive positions.",
+      Low: "He has low leadership aspirations — a lack of desire or ambition to take on leadership roles within an organization or community. He may have a lack of confidence, fear of failure, comfort zone, or unawareness of his potentials.",
     },
     educational: {
-      High: "His score 12 indicates that he has high educational aspirations, referring to a strong desire and ambition to achieve significant accomplishments in his education. He sets lofty goals for his academic pursuits and is motivated to excel in studies. This often extends beyond simply obtaining a degree and involves a commitment to continuous learning, personal development, and making a positive impact in his chosen field.",
-      Moderate: "His score 12 indicates that he has moderate educational aspiration and has a desire for education and personal development but may not be aiming for the highest level of academic achievement. He often seeks a balance between acquiring practical skills and gaining a reasonable level of academic achievement. He prioritizes a combination of formal education, vocational training, or professional certifications that directly contribute to his career objective.",
-      Low: "His score 12 indicates that he has low educational aspiration, referring to a lack of motivation or desire to pursue a higher level of education. This manifests in various ways, such as a disinterest in academic achievement, a belief that education is not important, or a perception that his current level of education is sufficient for his needs. He may not see the value or importance of obtaining additional education beyond a certain level.",
+      High: "He has high educational aspirations, referring to a strong desire and ambition to achieve significant accomplishments in his education. He sets lofty goals for his academic pursuits and is motivated to excel in studies and make a positive impact in his chosen field.",
+      Moderate: "He has moderate educational aspiration and has a desire for education and personal development but may not be aiming for the highest level of academic achievement. He prioritizes a combination of formal education and vocational training.",
+      Low: "He has low educational aspiration, referring to a lack of motivation or desire to pursue a higher level of education. He may not see the value or importance of obtaining additional education beyond a certain level.",
     },
     achievement: {
-      High: "He has high achievement aspirations indicated by the score 12. Refer that he is quite broad and could refer to various contexts, such as academic achievements, career goals, sports, personal accomplishments, setting realistic goals, staying focused, and consistently working towards achievements. He takes lots of initiatives to achieve in his day-to-day life events. He can understand long-term life satisfaction that emphasizes the importance of an individual's perception of his success in one or more life domains relative to personal goals.",
-      Moderate: "He has moderate achievement aspirations indicated by the score 12. This could suggest that he has some aspirations and goals but may not be extremely ambitious or overly modest.",
-      Low: "He has low achievement aspirations indicated by the score 12. Suggests that he has limited motivation or ambition to set and achieve challenging goals. It could be indicative of a mindset where he is not actively seeking or striving for higher levels of success or accomplishment.",
+      High: "He has high achievement aspirations. He is quite broad in taking lots of initiatives to achieve in his day-to-day life. He can understand long-term life satisfaction that emphasizes personal success in one or more life domains relative to personal goals.",
+      Moderate: "He has moderate achievement aspirations. This could suggest that he has some aspirations and goals but may not be extremely ambitious or overly modest.",
+      Low: "He has low achievement aspirations. He has limited motivation or ambition to set and achieve challenging goals. He may not be actively seeking or striving for higher levels of success or accomplishment.",
     },
   },
 };
-// **🔹 Report generation endpoint**
-router.post("/generate-report", async (req, res) => {
-  const { name, rollNumber, gender, isFirstGraduate, hsPercentage, futureIdea, responses } = req.body;
 
-  if (!name || !rollNumber || !gender || isFirstGraduate === undefined || !hsPercentage || !futureIdea || !responses) {
-    return res.status(400).json({ message: "Missing required fields" });
+// ─── PDF Helper Functions ────────────────────────────────────────────────────
+
+const COLORS = {
+  primary:    "#0A3D7A",   // dark green
+  accent:     "#185FA5",   // medium green
+  light:      "#E8F0FA",   // light green bg
+  dark:       "#060F1E",   // very dark green
+  white:      "#FFFFFF",
+  text:       "#1A1A2E",
+  subtext:    "#4A5568",
+  border:     "#B8CFE8",
+  sectionBg:  "#F0F5FC",
+  tagBg:      "#D0E4F7",
+  tagText:    "#0A3D7A",
+  highColor:  "#0A3D7A",
+  modColor:   "#7B6B00",
+  lowColor:   "#8B1A1A",
+  highBg:     "#D0E4F7",
+  modBg:      "#FFF9C4",
+  lowBg:      "#FDDEDE",
+};
+
+const PAGE_W = 595;
+const PAGE_H = 842;
+const MARGIN = 48;
+const CONTENT_W = PAGE_W - MARGIN * 2;
+
+// Draw page background + subtle side accent bar
+function drawPageBase(doc) {
+  doc.rect(0, 0, PAGE_W, PAGE_H).fill(COLORS.white);
+  doc.rect(0, 0, 5, PAGE_H).fill(COLORS.primary);
+}
+
+// Draw cover page
+function drawCover(doc, report) {
+  drawPageBase(doc);
+
+  // Top header band
+  doc.rect(0, 0, PAGE_W, 200).fill(COLORS.dark);
+
+  // Decorative circle top-right
+  doc.circle(PAGE_W - 40, 40, 80).fillOpacity(0.08).fill(COLORS.white);
+  doc.circle(PAGE_W - 40, 40, 50).fillOpacity(0.08).fill(COLORS.white);
+
+  // Logo / title area
+  doc.fillOpacity(1);
+  doc.fontSize(11).fillColor(COLORS.accent).font("Helvetica")
+     .text("ERODE LINGAM POLYTECHNIC COLLEGE", MARGIN, 50, { width: CONTENT_W });
+  doc.fontSize(22).fillColor(COLORS.white).font("Helvetica-Bold")
+     .text("Psychiatric Assessment Report", MARGIN, 72, { width: CONTENT_W });
+  doc.fontSize(11).fillColor("rgba(255,255,255,0.6)").font("Helvetica")
+     .text("Comprehensive Student Psychological Evaluation", MARGIN, 104, { width: CONTENT_W });
+
+  // Date badge
+  const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+  doc.fontSize(10).fillColor("rgba(255,255,255,0.5)").text(`Generated: ${dateStr}`, MARGIN, 130);
+
+  // Student info card
+  const cardY = 220;
+  const cardH = 160;
+  doc.roundedRect(MARGIN, cardY, CONTENT_W, cardH, 10).fill(COLORS.sectionBg);
+  doc.roundedRect(MARGIN, cardY, 5, cardH, 3).fill(COLORS.accent);
+
+  doc.fontSize(10).fillColor(COLORS.subtext).font("Helvetica")
+     .text("STUDENT PROFILE", MARGIN + 20, cardY + 18);
+
+  const infoItems = [
+    ["Full Name",       report.name],
+    ["Roll Number",     report.rollNumber],
+    ["Gender",         report.gender],
+    ["12th Percentage", `${report.hsPercentage}%`],
+    ["First Graduate",  report.isFirstGraduate ? "Yes" : "No"],
+    ["Future Ambition", report.futureIdea],
+  ];
+
+  let col = 0, row = 0;
+  infoItems.forEach(([label, value]) => {
+    const x = MARGIN + 20 + col * (CONTENT_W / 2);
+    const y = cardY + 40 + row * 30;
+    doc.fontSize(9).fillColor(COLORS.subtext).font("Helvetica").text(label.toUpperCase(), x, y);
+    doc.fontSize(11).fillColor(COLORS.text).font("Helvetica-Bold").text(value || "—", x, y + 12);
+    col++;
+    if (col > 1) { col = 0; row++; }
+  });
+
+  // Assessment overview section
+  const sectY = cardY + cardH + 30;
+  doc.fontSize(13).fillColor(COLORS.primary).font("Helvetica-Bold")
+     .text("Assessment Overview", MARGIN, sectY);
+  doc.moveTo(MARGIN, sectY + 18).lineTo(MARGIN + CONTENT_W, sectY + 18)
+     .strokeColor(COLORS.border).lineWidth(0.5).stroke();
+
+  const domains = [
+    { icon: "01", label: "Self-Efficacy",     desc: "Belief in personal capabilities" },
+    { icon: "02", label: "Learning Style",    desc: "Preferred information processing" },
+    { icon: "03", label: "College Readiness", desc: "Academic and executive preparedness" },
+    { icon: "04", label: "Temperament",       desc: "Emotional and behavioral traits" },
+    { icon: "05", label: "Social Support",    desc: "Support network analysis" },
+    { icon: "06", label: "Aspiration",        desc: "Goals and ambitions" },
+  ];
+
+  domains.forEach((d, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const x = MARGIN + col * (CONTENT_W / 2 + 10);
+    const y = sectY + 30 + row * 50;
+    doc.roundedRect(x, y, CONTENT_W / 2 - 10, 40, 6).fill(COLORS.light);
+    doc.fontSize(9).fillColor(COLORS.accent).font("Helvetica-Bold").text(d.icon, x + 10, y + 8);
+    doc.fontSize(10).fillColor(COLORS.text).font("Helvetica-Bold").text(d.label, x + 30, y + 7);
+    doc.fontSize(8).fillColor(COLORS.subtext).font("Helvetica").text(d.desc, x + 30, y + 20);
+  });
+
+  // Footer
+  doc.fontSize(8).fillColor(COLORS.subtext)
+     .text("CONFIDENTIAL — For Academic Use Only", MARGIN, PAGE_H - 40, { width: CONTENT_W, align: "center" });
+}
+
+// Draw a section header
+function drawSectionHeader(doc, title, subtitle, y) {
+  doc.rect(MARGIN, y, CONTENT_W, 42).fill(COLORS.primary);
+  doc.roundedRect(MARGIN, y, 4, 42, 2).fill(COLORS.accent);
+  doc.fontSize(13).fillColor(COLORS.white).font("Helvetica-Bold")
+     .text(title, MARGIN + 16, y + 8, { width: CONTENT_W - 20 });
+  if (subtitle) {
+    doc.fontSize(9).fillColor("rgba(255,255,255,0.7)").font("Helvetica")
+       .text(subtitle, MARGIN + 16, y + 25, { width: CONTENT_W - 20 });
+  }
+  return y + 42 + 14;
+}
+
+// Draw a result item with level badge + description
+function drawResultItem(doc, label, level, description, y, pageAddCb) {
+  const MIN_H = 20;
+  // Estimate height needed
+  const descLines = Math.ceil(description.length / 90) + 1;
+  const blockH = Math.max(MIN_H, 16 + descLines * 13 + 24);
+
+  if (y + blockH > PAGE_H - 60) {
+    doc.addPage();
+    drawPageBase(doc);
+    y = MARGIN;
   }
 
-  console.log("Data received:", req.body);
+  // Card bg
+  doc.roundedRect(MARGIN, y, CONTENT_W, blockH, 6).fill(COLORS.sectionBg);
+  doc.roundedRect(MARGIN, y, 3, blockH, 2).fill(COLORS.accent);
+
+  // Label
+  doc.fontSize(10).fillColor(COLORS.text).font("Helvetica-Bold")
+     .text(label, MARGIN + 14, y + 10, { width: CONTENT_W * 0.55 });
+
+  // Level badge
+  if (level) {
+    const lvl = level.toLowerCase();
+    let bgC = COLORS.highBg, txtC = COLORS.highColor;
+    if (lvl === "moderate" || lvl === "medium") { bgC = COLORS.modBg; txtC = COLORS.modColor; }
+    if (lvl === "low")  { bgC = COLORS.lowBg;  txtC = COLORS.lowColor; }
+
+    const badgeW = 64, badgeH = 18;
+    const badgeX = MARGIN + CONTENT_W - badgeW - 10;
+    doc.roundedRect(badgeX, y + 8, badgeW, badgeH, 4).fill(bgC);
+    doc.fontSize(8).fillColor(txtC).font("Helvetica-Bold")
+       .text(level.toUpperCase(), badgeX, y + 13, { width: badgeW, align: "center" });
+  }
+
+  // Description
+  doc.fontSize(9).fillColor(COLORS.subtext).font("Helvetica")
+     .text(description, MARGIN + 14, y + 26, { width: CONTENT_W - 28, lineGap: 2 });
+
+  return y + blockH + 8;
+}
+
+// Draw footer on every page
+function addFooter(doc, pageNum, name) {
+  doc.fontSize(8).fillColor(COLORS.subtext).font("Helvetica")
+     .text(`${name} — Psychiatric Assessment Report`, MARGIN, PAGE_H - 28, { width: CONTENT_W * 0.6 });
+  doc.text(`Page ${pageNum}`, MARGIN, PAGE_H - 28, { width: CONTENT_W, align: "right" });
+  doc.moveTo(MARGIN, PAGE_H - 36).lineTo(MARGIN + CONTENT_W, PAGE_H - 36)
+     .strokeColor(COLORS.border).lineWidth(0.5).stroke();
+}
+
+// ─── Generate Report Text (same as before) ────────────────────────────────
+function buildReportData(scores, gender) {
+  const sections = [];
+
+  // Learning Style
+  const { dominantStyles } = scores.learningStyle;
+  // Normalize styles to lowercase, sort, build camelCase key e.g. ["Visual","Auditory"] -> "visualAuditory"
+  const normalizedStyles = dominantStyles.map(s => s.toLowerCase());
+  let learningKey;
+  if (normalizedStyles.length === 0) {
+    learningKey = "all";
+  } else if (normalizedStyles.length === 3) {
+    learningKey = "all";
+  } else if (normalizedStyles.length === 1) {
+    learningKey = normalizedStyles[0];
+  } else {
+    // Sort alphabetically then join as camelCase: first lowercase, rest capitalized
+    const sorted = normalizedStyles.sort();
+    learningKey = sorted[0] + sorted.slice(1).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join("");
+  }
+  let learningDesc = categoryDescriptions.learningStyle[learningKey] || categoryDescriptions.learningStyle["all"] || "No description available.";
+  learningDesc = learningDesc.replace(/\bHe\b/g, getPronoun(gender, "heShe"))
+                             .replace(/\bhis\b/g, getPronoun(gender, "hisHer"));
+  sections.push({
+    title: "Learning Style",
+    subtitle: "How the student best absorbs and processes information",
+    items: [{ label: `Style: ${dominantStyles.join(", ")}`, level: null, description: learningDesc }],
+  });
+
+  // College Readiness
+  const crItems = [];
+  const crLabels = { academicSkill: "Academic Skills", executiveFunction: "Executive Function", motivationConfidence: "Motivation & Confidence", postEducation: "Post-Education Readiness" };
+  Object.entries(scores.collegeReadiness).forEach(([sub, data]) => {
+    const range = data?.interpretation || "N/A";
+    crItems.push({ label: crLabels[sub] || sub, level: range, description: getDescription("collegeReadiness", sub, range, gender) });
+  });
+  sections.push({ title: "College Readiness", subtitle: "Academic preparedness across four key dimensions", items: crItems });
+
+  // Temperament
+  const tempItems = [];
+  const tempLabels = { personallyReserved: "Personally Reserved", selfCriticism: "Self-Criticism", anxious: "Anxiety Level", perfectionism: "Perfectionism", irritability: "Irritability" };
+  scores.temperament.forEach(({ category, level }) => {
+    tempItems.push({ label: tempLabels[category] || category, level, description: getDescription("temperament", category, level, gender) });
+  });
+  sections.push({ title: "Temperament", subtitle: "Emotional and behavioral personality traits", items: tempItems });
+
+  // Social Support
+  const highSources = Object.keys(scores.socialSupport).filter(k => scores.socialSupport[k] === "High");
+  const socialDesc = getSocialSupportDescription(scores.socialSupport, gender);
+  sections.push({
+    title: "Social Support",
+    subtitle: "Primary sources of emotional and social support",
+    items: [{ label: `Primary Support: ${highSources.length > 0 ? highSources.join(", ") : "Limited"}`, level: highSources.length > 1 ? "High" : highSources.length === 1 ? "Moderate" : "Low", description: socialDesc }],
+  });
+
+  // Aspiration
+  const aspItems = [];
+  const aspLabels = { leadership: "Leadership Aspiration", educational: "Educational Aspiration", education: "Educational Aspiration", achievement: "Achievement Aspiration" };
+  Object.entries(scores.aspiration).forEach(([sub, data]) => {
+    const range = data?.interpretation || "N/A";
+    aspItems.push({ label: aspLabels[sub] || sub, level: range, description: getDescription("aspiration", sub, range, gender) });
+  });
+  sections.push({ title: "Aspiration", subtitle: "Goals, ambitions, and future-oriented motivations", items: aspItems });
+
+  return sections;
+}
+
+// ─── Routes ───────────────────────────────────────────────────────────────────
+
+router.post("/generate-report", async (req, res) => {
+  const { name, rollNumber, gender, isFirstGraduate, hsPercentage, futureIdea, responses } = req.body;
+  if (!name || !rollNumber || !gender || isFirstGraduate === undefined || !hsPercentage || !futureIdea || !responses)
+    return res.status(400).json({ message: "Missing required fields" });
 
   try {
     const scores = {
-      selfEfficacy: scoringHelper.calculateSelfEfficacy(responses.part1),
-      learningStyle: scoringHelper.calculateLearningStyle(responses.part2),
+      selfEfficacy:     scoringHelper.calculateSelfEfficacy(responses.part1),
+      learningStyle:    scoringHelper.calculateLearningStyle(responses.part2),
       collegeReadiness: scoringHelper.calculateCollegeReadiness(responses.part3),
-      temperament: scoringHelper.calculateTemperament(responses.part4),
-      socialSupport: scoringHelper.calculateSocialSupport(responses.part5),
-      aspiration: scoringHelper.calculateAspiration(responses.part6),
+      temperament:      scoringHelper.calculateTemperament(responses.part4),
+      socialSupport:    scoringHelper.calculateSocialSupport(responses.part5),
+      aspiration:       scoringHelper.calculateAspiration(responses.part6),
     };
 
-    let report = `Report for ${name}, Roll No: ${rollNumber}\n`;
-    report += `Gender: ${gender}\n`;
-    report += `First Graduate: ${isFirstGraduate ? `${getPronoun(gender, "heShe")} is a first graduate in ${getPronoun(gender, "hisHer")} family` : `${getPronoun(gender, "heShe")} is not a first graduate in ${getPronoun(gender, "hisHer")} family`}\n`;
-    report += `12th Grade Percentage: ${hsPercentage}%\n`;
-    report += `Future Ambition: ${futureIdea}\n\n`;
+    // Build PDF sections as structured data
+    const pdfSections = [];
 
-    /*const selfEfficacyRange = scores.selfEfficacy?.interpretation || "No interpretation available";
-    let selfEfficacyDesc = getDescription("selfEfficacy", null, selfEfficacyRange, gender);
-    report += `Self-Efficacy: ${selfEfficacyRange}\nDescription: ${selfEfficacyDesc}\n\n`;*/
-
-    const { dominantStyles } = scores.learningStyle;
-    let learningKey = dominantStyles.length === 3 ? "all" : dominantStyles.sort().join("And");
-    let learningDescription = categoryDescriptions.learningStyle[learningKey] || "No description available.";
-    report += `Learning Style: ${dominantStyles.join(", ")}\nDescription: ${learningDescription.replace(/\bHe\b/g, getPronoun(gender, "heShe"))}\n\n`;
-
-    Object.entries(scores.collegeReadiness).forEach(([subCategory, data]) => {
-      let range = data?.interpretation || "No interpretation available";
-      let description = getDescription("collegeReadiness", subCategory, range, gender);
-      report += `${subCategory}: ${range}\nDescription: ${description}\n\n`;
+    // Self Efficacy
+    const seRange = scores.selfEfficacy?.interpretation || "moderate";
+    pdfSections.push({
+      sectionTitle: "Self-Efficacy", sectionSubtitle: "Belief in personal ability to succeed",
+      items: [{ label: "Self-Efficacy Level", level: seRange, description: getDescription("selfEfficacy", null, seRange, gender) }]
     });
 
+    // Learning Style
+    const domStyles = scores.learningStyle?.dominantStyles || [];
+    const normStyles = domStyles.map(s => s.toLowerCase());
+    let lKey = normStyles.length === 0 || normStyles.length === 3 ? "all"
+      : normStyles.length === 1 ? normStyles[0]
+      : normStyles.sort()[0] + normStyles.sort().slice(1).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join("");
+    let lDesc = categoryDescriptions.learningStyle[lKey] || categoryDescriptions.learningStyle["all"];
+    lDesc = lDesc.replace(/\bHe\b/g, getPronoun(gender, "heShe")).replace(/\bhis\b/g, getPronoun(gender, "hisHer"));
+    pdfSections.push({
+      sectionTitle: "Learning Style", sectionSubtitle: "Preferred information processing method",
+      items: [{ label: `Style: ${domStyles.join(", ") || "All Styles"}`, level: null, description: lDesc }]
+    });
+
+    // College Readiness
+    const crLabels = { academicSkill: "Academic Skills", executiveFunction: "Executive Function", motivationConfidence: "Motivation & Confidence", postEducation: "Post-Education Readiness" };
+    const crItems = [];
+    Object.entries(scores.collegeReadiness).forEach(([sub, data]) => {
+      const range = data?.interpretation || "Low";
+      crItems.push({ label: crLabels[sub] || sub, level: range, description: getDescription("collegeReadiness", sub, range, gender) });
+    });
+    pdfSections.push({ sectionTitle: "College Readiness", sectionSubtitle: "Academic preparedness across four key dimensions", items: crItems });
+
+    // Temperament
+    const tempLabels = { personallyReserved: "Personally Reserved", selfCriticism: "Self-Criticism", anxious: "Anxiety & Worrying", perfectionism: "Perfectionism", irritability: "Irritability" };
+    const tempItems = [];
     scores.temperament.forEach(({ category, level }) => {
-      let description = getDescription("temperament", category, level, gender);
-      report += `${category}: ${level}\nDescription: ${description}\n\n`;
+      tempItems.push({ label: tempLabels[category] || category, level, description: getDescription("temperament", category, level, gender) });
+    });
+    pdfSections.push({ sectionTitle: "Temperament", sectionSubtitle: "Emotional and behavioral personality traits", items: tempItems });
+
+    // Social Support
+    const highSources = Object.keys(scores.socialSupport).filter(k => scores.socialSupport[k] === "High");
+    const sourceLabel = highSources.length > 0 ? highSources.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(", ") : "Limited Support";
+    const socialLevel = highSources.length >= 2 ? "High" : highSources.length === 1 ? "Moderate" : "Low";
+    pdfSections.push({
+      sectionTitle: "Social Support", sectionSubtitle: "Primary sources of emotional and social support",
+      items: [{ label: `Primary Support: ${sourceLabel}`, level: socialLevel, description: getSocialSupportDescription(scores.socialSupport, gender) }]
     });
 
-    report += `Social Support: ${Object.keys(scores.socialSupport).filter(key => scores.socialSupport[key] === "High").join(", ")}\n`;
-    report += `Description: ${getSocialSupportDescription(scores.socialSupport, gender)}\n\n`;
-
-    Object.entries(scores.aspiration).forEach(([subCategory, data]) => {
-      let range = data?.interpretation || "No interpretation available";
-      let description = getDescription("aspiration", subCategory, range, gender);
-      report += `${subCategory} Aspiration: ${range}\nDescription: ${description}\n\n`;
+    // Aspiration
+    const aspLabels = { leadership: "Leadership Aspiration", educational: "Educational Aspiration", education: "Educational Aspiration", achievement: "Achievement Aspiration" };
+    const aspItems = [];
+    Object.entries(scores.aspiration).forEach(([sub, data]) => {
+      const range = data?.interpretation || "Moderate";
+      const normalizedSub = sub === "education" ? "educational" : sub;
+      aspItems.push({ label: aspLabels[sub] || sub, level: range, description: getDescription("aspiration", normalizedSub, range, gender) });
     });
+    pdfSections.push({ sectionTitle: "Aspiration", sectionSubtitle: "Goals, ambitions, and future-oriented motivations", items: aspItems });
 
-    console.log("Generated Report:\n", report);
+    // Save to MongoDB — store sections as JSON for PDF, plain text for readability
+    let reportText = `Report for ${name}, Roll No: ${rollNumber}\nGender: ${gender}\n`;
+    reportText += `First Graduate: ${isFirstGraduate ? "Yes" : "No"}\n`;
+    reportText += `12th Grade Percentage: ${hsPercentage}%\nFuture Ambition: ${futureIdea}\n`;
 
-    // **✅ Save Report to MongoDB**
     const newReport = new Report({
-      name,
-      rollNumber,
-      gender,
-      isFirstGraduate,
-      hsPercentage,
-      futureIdea,
-      generatedReport: report,
+      name, rollNumber, gender, isFirstGraduate, hsPercentage, futureIdea,
+      generatedReport: JSON.stringify(pdfSections), // store sections as JSON
     });
-
     await newReport.save();
 
-    res.status(200).json({ report, message: "Report generated and saved successfully!" });
+    res.status(200).json({ report: reportText, message: "Report generated and saved successfully!" });
   } catch (error) {
     console.error("Error generating report:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-// **✅ GET: Fetch All Saved Reports**
 router.get("/saved-reports", async (req, res) => {
   try {
     const reports = await Report.find();
     res.status(200).json(reports);
   } catch (error) {
-    console.error("Error fetching reports:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
-router.get('/get-report', async (req, res) => {
 
+router.get("/get-report", async (req, res) => {
   const { query } = req.query;
-
   try {
-      const report = await Report.findOne({ $or: [{ name: query }, { rollNumber: query }] });
-
-      if (!report) {
-          return res.status(404).json({ message: "Report not found" });
-      }
-
-      res.json(report);
+    const report = await Report.findOne({ $or: [{ name: query }, { rollNumber: query }] });
+    if (!report) return res.status(404).json({ message: "Report not found" });
+    res.json(report);
   } catch (error) {
-      res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-
+// ─── Professional PDF Download ────────────────────────────────────────────────
 router.get("/download/:id", async (req, res) => {
   try {
-      const report = await Report.findById(req.params.id);
-      if (!report) {
-          return res.status(404).json({ message: "Report not found" });
+    const report = await Report.findById(req.params.id);
+    if (!report) return res.status(404).json({ message: "Report not found" });
+
+    const doc = new PDFDocument({ size: "A4", margin: 0, bufferPages: true });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=${report.name.replace(/\s+/g, "_")}_Report.pdf`);
+    doc.pipe(res);
+
+    // ── PAGE 1: Cover ──
+    drawCover(doc, report);
+    addFooter(doc, 1, report.name);
+
+    // ── PAGE 2+: Detailed Results using saved scores ──
+    doc.addPage();
+    drawPageBase(doc);
+
+    let y = MARGIN;
+    let pageNum = 2;
+
+    // Helper to start new page if needed
+    const checkPage = (needed) => {
+      if (y + needed > PAGE_H - 60) {
+        addFooter(doc, pageNum, report.name);
+        doc.addPage();
+        drawPageBase(doc);
+        pageNum++;
+        y = MARGIN + 10;
       }
+    };
 
-      const doc = new PDFDocument();
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `attachment; filename=${report.name}_Report.pdf`);
-      
-      doc.pipe(res);
+    // Section title banner
+    doc.rect(MARGIN, y, CONTENT_W, 50).fill(COLORS.primary);
+    doc.fontSize(16).fillColor(COLORS.white).font("Helvetica-Bold")
+       .text("Detailed Assessment Results", MARGIN + 16, y + 10, { width: CONTENT_W - 32 });
+    doc.fontSize(9).fillColor("rgba(255,255,255,0.65)").font("Helvetica")
+       .text("Individual scores and interpretations across all six psychological domains", MARGIN + 16, y + 32, { width: CONTENT_W - 32 });
+    y += 64;
 
-      doc.fontSize(18).text(`Report for ${report.name}`, { align: "center" });
-      doc.moveDown();
-      doc.fontSize(12).text(`Roll Number: ${report.rollNumber}`);
-      doc.text(`Gender: ${report.gender}`);
-      doc.text(`12th Grade Percentage: ${report.hsPercentage}%`);
-      doc.text(`First Graduate: ${report.isFirstGraduate ? "Yes" : "No"}`);
-      doc.text(`Future Ambition: ${report.futureIdea}`);
-      doc.moveDown();
-      
-      doc.fontSize(14).text("Generated Report:", { underline: true });
-      doc.moveDown();
-      doc.fontSize(10).text(report.generatedReport, { lineGap: 4 });
+    // Load structured sections from MongoDB (stored as JSON)
+    let pdfSections = [];
+    try {
+      const parsed = JSON.parse(report.generatedReport);
+      if (Array.isArray(parsed)) pdfSections = parsed;
+    } catch(e) {
+      // Old record - plain text fallback
+      pdfSections = [];
+    }
 
-      doc.end();
+    if (pdfSections.length > 0) {
+      // Render each section with header + items
+      pdfSections.forEach(section => {
+        checkPage(80);
+        y = drawSectionHeader(doc, section.sectionTitle, section.sectionSubtitle, y);
+        (section.items || []).forEach(item => {
+          checkPage(60);
+          y = drawResultItem(doc, item.label, item.level, item.description || "No description available.", y);
+        });
+      });
+    } else {
+      // Fallback for old reports - plain text
+      const lines = (report.generatedReport || "").split("\n").filter(l => l.trim());
+      lines.forEach(line => {
+        checkPage(30);
+        doc.fontSize(10).fillColor(COLORS.text).font("Helvetica").text(line, MARGIN, y, { width: CONTENT_W });
+        y += 18;
+      });
+    }
+
+        // ── Final Page: Summary ──
+    addFooter(doc, pageNum, report.name);
+    doc.addPage();
+    drawPageBase(doc);
+    pageNum++;
+
+    // Summary banner
+    doc.rect(MARGIN, MARGIN, CONTENT_W, 50).fill(COLORS.dark);
+    doc.fontSize(16).fillColor(COLORS.white).font("Helvetica-Bold")
+       .text("Report Summary", MARGIN + 16, MARGIN + 14, { width: CONTENT_W - 32 });
+
+    y = MARGIN + 70;
+
+    // Closing note card
+    doc.roundedRect(MARGIN, y, CONTENT_W, 130).fill(COLORS.light);
+    doc.roundedRect(MARGIN, y, 4, 130, 2).fill(COLORS.primary);
+    doc.fontSize(12).fillColor(COLORS.primary).font("Helvetica-Bold")
+       .text("Important Notice", MARGIN + 16, y + 14);
+    doc.fontSize(10).fillColor(COLORS.subtext).font("Helvetica")
+       .text(
+         "This assessment report is generated based on self-reported responses and is intended for academic and guidance purposes only. The results should be interpreted by a qualified counselor or psychologist in the context of the student's overall profile.\n\nThis report is strictly confidential and should not be shared without appropriate consent.",
+         MARGIN + 16, y + 34, { width: CONTENT_W - 32, lineGap: 3 }
+       );
+
+    y += 150;
+
+    // Sign-off
+    doc.fontSize(11).fillColor(COLORS.text).font("Helvetica-Bold")
+       .text("Prepared by:", MARGIN, y);
+    doc.fontSize(11).fillColor(COLORS.subtext).font("Helvetica")
+       .text("ELM Quiz Assessment System — Erode Lingam Polytechnic College", MARGIN, y + 16);
+    doc.fontSize(10).fillColor(COLORS.subtext)
+       .text(`Date: ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`, MARGIN, y + 32);
+
+    // Horizontal rule
+    doc.moveTo(MARGIN, y + 55).lineTo(MARGIN + CONTENT_W, y + 55)
+       .strokeColor(COLORS.border).lineWidth(0.5).stroke();
+
+    doc.fontSize(8).fillColor(COLORS.subtext)
+       .text("© ELM Quiz — Psychiatric Assessment Platform. All rights reserved.", MARGIN, y + 65, { width: CONTENT_W, align: "center" });
+
+    addFooter(doc, pageNum, report.name);
+
+    doc.end();
   } catch (error) {
-      console.error("Error generating PDF:", error);
-      res.status(500).json({ message: "Internal server error" });
+    console.error("Error generating PDF:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
-
-
-
 
 module.exports = router;

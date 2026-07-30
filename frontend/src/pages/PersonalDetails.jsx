@@ -1,51 +1,33 @@
-
 import React, { useState } from "react";
+import "../styles/PersonalDetails.css";
 
 const PersonalDetails = ({ onSubmit }) => {
   const [details, setDetails] = useState({
-    name: "",
-    rollNumber: "",
-    gender: "",
-    isFirstGraduate: "",
-    hsPercentage: "",
-    futureIdea: "",
+    name: "", rollNumber: "", gender: "",
+    isFirstGraduate: "", hsPercentage: "", futureIdea: "",
   });
-
   const [errors, setErrors] = useState({});
 
   const validateField = (name, value) => {
     const newErrors = { ...errors };
     switch (name) {
       case "name":
-        if (!/^[a-zA-Z\s]+$/.test(value)) {
-          newErrors[name] = "Name must contain only letters and spaces.";
-        } else {
-          delete newErrors[name];
-        }
+        if (!/^[a-zA-Z\s]+$/.test(value)) newErrors[name] = "Name must contain only letters and spaces.";
+        else delete newErrors[name];
         break;
       case "rollNumber":
-        if (!/^\d{2,3}[a-zA-Z]{2,2}\d{2,3}$/.test(value)) {
-          newErrors[name] = "Invalid Roll Number";
-        } else {
-          delete newErrors[name];
-        }
+        if (!/^\d{2,3}[a-zA-Z]{2,2}\d{2,3}$/.test(value)) newErrors[name] = "Invalid Roll Number";
+        else delete newErrors[name];
         break;
       case "hsPercentage":
-        if (value < 0 || value > 100) {
-          newErrors[name] = "Percentage must be between 0 and 100.";
-        } else {
-          delete newErrors[name];
-        }
+        if (value < 0 || value > 100) newErrors[name] = "Percentage must be between 0 and 100.";
+        else delete newErrors[name];
         break;
       case "futureIdea":
-        if (value.length < 5) {
-          newErrors[name] = "Ambition must be at least 5 characters long.";
-        } else {
-          delete newErrors[name];
-        }
+        if (value.length < 5) newErrors[name] = "Ambition must be at least 5 characters long.";
+        else delete newErrors[name];
         break;
-      default:
-        break;
+      default: break;
     }
     setErrors(newErrors);
   };
@@ -58,198 +40,77 @@ const PersonalDetails = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (Object.keys(errors).length === 0) {
-      onSubmit(details);
-    } else {
-      alert("Please fix the errors before submitting.");
-    }
+    if (Object.keys(errors).length === 0) onSubmit(details);
+    else alert("Please fix the errors before submitting.");
   };
 
+  const fields = [
+    { label: "Full Name", name: "name", type: "text", placeholder: "Enter your full name", icon: "👤" },
+    { label: "Roll Number", name: "rollNumber", type: "text", placeholder: "e.g. 21CS045", icon: "🎫" },
+    { label: "12th Grade Percentage", name: "hsPercentage", type: "number", placeholder: "e.g. 87.5", icon: "📊" },
+    { label: "Future Ambition", name: "futureIdea", type: "text", placeholder: "What do you aspire to become?", icon: "🌟" },
+  ];
+
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(135deg, #f5f5f5, #eeeeee)", // 5th light gray applied
-        fontFamily: "'Arial', sans-serif",
-      }}
-    >
-      <div
-        style={{
-          padding: "20px",
-          maxWidth: "500px",
-          width: "100%",
-          background: "rgba(245, 245, 245, 0.5)", // Adjusted light gray for transparency
-          borderRadius: "15px",
-          boxShadow: "0 8px 32px rgba(128, 128, 128, 0.2)", // Softer shadow
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          border: "1px solid rgba(192, 192, 192, 0.3)", // Light gray border
-        }}
-      >
-        <h2
-          style={{
-            marginBottom: "20px",
-            textAlign: "center",
-            color: "#555", // Soft gray for text
-          }}
-        >
-          Personal Details
-        </h2>
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "15px",
-          }}
-        >
-          <label style={{ color: "#555" }}>
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={details.name}
-              onChange={handleChange}
-              style={{
-                padding: "10px",
-                width: "100%",
-                marginTop: "5px",
-                borderRadius: "8px",
-                border: "1px solid rgba(192, 192, 192, 0.4)",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-                color: "#555",
-              }}
-              required
-            />
-            {errors.name && <p style={{ color: "#d32f2f" }}>{errors.name}</p>}
-          </label>
-          <label style={{ color: "#555" }}>
-            Roll Number:
-            <input
-              type="text"
-              name="rollNumber"
-              value={details.rollNumber}
-              onChange={handleChange}
-              style={{
-                padding: "10px",
-                width: "100%",
-                marginTop: "5px",
-                borderRadius: "8px",
-                border: "1px solid rgba(192, 192, 192, 0.4)",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-                color: "#555",
-              }}
-              required
-            />
-            {errors.rollNumber && (
-              <p style={{ color: "#d32f2f" }}>{errors.rollNumber}</p>
-            )}
-          </label>
-          <label style={{ color: "#555" }}>
-            Gender:
-            <select
-              name="gender"
-              value={details.gender}
-              onChange={handleChange}
-              style={{
-                padding: "10px",
-                width: "100%",
-                marginTop: "5px",
-                borderRadius: "8px",
-                border: "1px solid rgba(192, 192, 192, 0.4)",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-                color: "#555",
-              }}
-              required
-            >
-              <option value="">Select Gender</option>
+    <div className="pd-page">
+      <div className="pd-bg-orb pd-bg-orb-1" />
+      <div className="pd-bg-orb pd-bg-orb-2" />
+
+      <div className="pd-container">
+        <div className="pd-header">
+          <div className="pd-step-badge">Step 1 of 2</div>
+          <h1 className="pd-title">Personal Details</h1>
+          <p className="pd-subtitle">This information will appear on your assessment report</p>
+        </div>
+
+        <form className="pd-form" onSubmit={handleSubmit}>
+          {fields.map(({ label, name, type, placeholder, icon }) => (
+            <div className="pd-field" key={name}>
+              <label className="pd-label">
+                <span className="pd-label-icon">{icon}</span>
+                {label}
+              </label>
+              <input
+                className={`pd-input ${errors[name] ? "pd-input-error" : ""}`}
+                type={type}
+                name={name}
+                value={details[name]}
+                onChange={handleChange}
+                placeholder={placeholder}
+                required
+              />
+              {errors[name] && <p className="pd-error">{errors[name]}</p>}
+            </div>
+          ))}
+
+          <div className="pd-field">
+            <label className="pd-label"><span className="pd-label-icon">⚧</span>Gender</label>
+            <select className="pd-input pd-select" name="gender" value={details.gender} onChange={handleChange} required>
+              <option value="">Select your gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
-          </label>
-          <label style={{ color: "#555" }}>
-            Are you a first-generation graduate?
-            <select
-              name="isFirstGraduate"
-              value={details.isFirstGraduate}
-              onChange={handleChange}
-              style={{
-                padding: "10px",
-                width: "100%",
-                marginTop: "5px",
-                borderRadius: "8px",
-                border: "1px solid rgba(192, 192, 192, 0.4)",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-                color: "#555",
-              }}
-              required
-            >
-              <option value="">Select</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          </label>
-          <label style={{ color: "#555" }}>
-            12th Grade Percentage:
-            <input
-              type="number"
-              name="hsPercentage"
-              value={details.hsPercentage}
-              onChange={handleChange}
-              style={{
-                padding: "10px",
-                width: "100%",
-                marginTop: "5px",
-                borderRadius: "8px",
-                border: "1px solid rgba(192, 192, 192, 0.4)",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-                color: "#555",
-              }}
-              required
-            />
-            {errors.hsPercentage && (
-              <p style={{ color: "#d32f2f" }}>{errors.hsPercentage}</p>
-            )}
-          </label>
-          <label style={{ color: "#555" }}>
-            Ambition:
-            <input
-              type="text"
-              name="futureIdea"
-              value={details.futureIdea}
-              onChange={handleChange}
-              style={{
-                padding: "10px",
-                width: "100%",
-                marginTop: "5px",
-                borderRadius: "8px",
-                border: "1px solid rgba(192, 192, 192, 0.4)",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-                color: "#555",
-              }}
-              required
-            />
-            {errors.futureIdea && (
-              <p style={{ color: "#d32f2f" }}>{errors.futureIdea}</p>
-            )}
-          </label>
-          <button
-            type="submit"
-            style={{
-              padding: "10px",
-              backgroundColor: "#4CAF50",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              marginTop: "10px",
-            }}
-          >
-            Start Quiz
+          </div>
+
+          <div className="pd-field">
+            <label className="pd-label"><span className="pd-label-icon">🎓</span>First Generation Graduate?</label>
+            <div className="pd-toggle-group">
+              {["true", "false"].map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  className={`pd-toggle-btn ${details.isFirstGraduate === val ? "active" : ""}`}
+                  onClick={() => setDetails({ ...details, isFirstGraduate: val })}
+                >
+                  {val === "true" ? "Yes, I am" : "No, I'm not"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button type="submit" className="pd-submit">
+            Continue to Quiz →
           </button>
         </form>
       </div>

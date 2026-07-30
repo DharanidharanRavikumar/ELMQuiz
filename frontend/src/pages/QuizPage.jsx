@@ -1,18 +1,16 @@
 import React, { useContext, useState } from "react";
 import { QuizContext } from "../contexts/QuizContext";
+import "../styles/QuizPage.css";
 
 const QuizPage = () => {
   const {
-    questions,
-    currentQuestion,
-    handleAnswer,
-    moveToNextQuestion,
-    moveToPreviousQuestion,
-    responses,
+    questions, currentQuestion, handleAnswer,
+    moveToNextQuestion, moveToPreviousQuestion, responses,
   } = useContext(QuizContext);
 
   const [submissionStatus, setSubmissionStatus] = useState("");
   const [selectedOption, setSelectedOption] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOptionClick = (score, part, index) => {
     setSelectedOption(index);
@@ -20,22 +18,17 @@ const QuizPage = () => {
   };
 
   const submitQuizResults = async () => {
+    setIsSubmitting(true);
     try {
       const personalDetails = JSON.parse(localStorage.getItem("personalDetails"));
-
       const formattedResponses = {
-        part1: responses.part1 || [],
-        part2: responses.part2 || [],
-        part3: responses.part3 || [],
-        part4: responses.part4 || [],
-        part5: responses.part5 || [],
-        part6: responses.part6 || [],
+        part1: responses.part1 || [], part2: responses.part2 || [],
+        part3: responses.part3 || [], part4: responses.part4 || [],
+        part5: responses.part5 || [], part6: responses.part6 || [],
       };
-
       if (formattedResponses.part6.length > 24) {
         formattedResponses.part6 = formattedResponses.part6.slice(0, 24);
       }
-
       const payload = {
         name: personalDetails.name,
         rollNumber: personalDetails.rollNumber,
@@ -45,128 +38,110 @@ const QuizPage = () => {
         futureIdea: personalDetails.futureIdea,
         responses: formattedResponses,
       };
-
-      const response = await fetch("http://localhost:3000/api/report/generate-report", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/report/generate-report`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
-      if (response.ok) {
-        setSubmissionStatus("Quiz submitted successfully!");
-      } else {
-        setSubmissionStatus("Failed to submit quiz. Please try again.");
-      }
+      if (response.ok) setSubmissionStatus("success");
+      else setSubmissionStatus("error");
     } catch (error) {
-      setSubmissionStatus("Error submitting quiz. Check your internet connection.");
+      setSubmissionStatus("error");
       console.error("Submission error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const questionData = questions[currentQuestion];
+  const progress = ((currentQuestion + 1) / questions.length) * 100;
+
+  if (submissionStatus === "success") {
+    return (
+      <div className="quiz-page">
+        <div className="quiz-bg-orb quiz-bg-orb-1" />
+        <div className="quiz-success">
+          <div className="quiz-success-icon">✅</div>
+          <h2 className="quiz-success-title">Assessment Complete!</h2>
+          <p className="quiz-success-desc">
+            Your responses have been submitted successfully. Your report is being generated and will be available shortly.
+          </p>
+          <div className="quiz-success-badge">Report Generated</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: "20px", fontFamily: "'Arial', sans-serif" }}>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "20px" }}>
-        <p style={{ fontSize: "24px", fontWeight: "bold", color: "#4CAF50", backgroundColor: "#F0F0F0", padding: "10px 20px", borderRadius: "10px", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
-          Question {currentQuestion + 1} / {questions.length}
-        </p>
-      </div>
+    <div className="quiz-page">
+      <div className="quiz-bg-orb quiz-bg-orb-1" />
+      <div className="quiz-bg-orb quiz-bg-orb-2" />
 
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>{questionData.question}</h2>
-      <ul style={{ listStyleType: "none", padding: 0, maxWidth: "500px", margin: "0 auto" }}>
-        {questionData.options.map((option, index) => (
-          <li key={index} style={{ marginBottom: "10px" }}>
+      <div className="quiz-container">
+        <div className="quiz-header">
+          <div className="quiz-progress-info">
+            <span className="quiz-progress-label">Question {currentQuestion + 1} of {questions.length}</span>
+            <span className="quiz-progress-pct">{Math.round(progress)}%</span>
+          </div>
+          <div className="quiz-progress-track">
+            <div className="quiz-progress-fill" style={{ width: `${progress}%` }} />
+          </div>
+          <div className="quiz-part-tag">Part {questionData.part}</div>
+        </div>
+
+        <div className="quiz-question-card">
+          <h2 className="quiz-question-text">{questionData.question}</h2>
+
+          <div className="quiz-options">
+            {questionData.options.map((option, index) => (
+              <button
+                key={index}
+                className={`quiz-option ${selectedOption === index ? "selected" : ""}`}
+                onClick={() => handleOptionClick(option.score, questionData.part, index)}
+              >
+                <span className="quiz-option-letter">
+                  {String.fromCharCode(65 + index)}
+                </span>
+                <span className="quiz-option-text">{option.text}</span>
+                {selectedOption === index && <span className="quiz-option-check">✓</span>}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="quiz-nav">
+          <button
+            className={`quiz-nav-btn ${currentQuestion === 0 ? "disabled" : ""}`}
+            onClick={moveToPreviousQuestion}
+            disabled={currentQuestion === 0}
+          >
+            ← Previous
+          </button>
+
+          {currentQuestion < questions.length - 1 ? (
             <button
-              style={{
-                padding: "10px 15px",
-                width: "100%",
-                textAlign: "left",
-                backgroundColor: selectedOption === index ? "#007BFF" : "#FFFFFF",
-                color: selectedOption === index ? "#FFFFFF" : "#007BFF",
-                border: selectedOption === index ? "2px solid #0056b3" : "1px solid #007BFF",
-                borderRadius: "5px",
-                cursor: "pointer",
-                fontSize: "16px",
-                transition: "background-color 0.3s ease, color 0.3s ease, border 0.3s ease",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              }}
-              onClick={() => handleOptionClick(option.score, questionData.part, index)}
+              className="quiz-nav-btn quiz-nav-next"
+              onClick={() => { setSelectedOption(null); moveToNextQuestion(); }}
             >
-              {option.text}
+              Next →
             </button>
-          </li>
-        ))}
-      </ul>
+          ) : (
+            <button
+              className={`quiz-nav-btn quiz-nav-submit ${isSubmitting ? "loading" : ""}`}
+              onClick={submitQuizResults}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Submit Assessment ✓"}
+            </button>
+          )}
+        </div>
 
-      <div style={{ marginTop: "20px", textAlign: "center" }}>
-        <button
-          style={{
-            padding: "10px 20px",
-            marginRight: "10px",
-            backgroundColor: currentQuestion === 0 ? "#cccccc" : "#007BFF",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: currentQuestion === 0 ? "not-allowed" : "pointer",
-          }}
-          onClick={moveToPreviousQuestion}
-          disabled={currentQuestion === 0}
-        >
-          Previous
-        </button>
-        {currentQuestion < questions.length - 1 ? (
-          <button
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#4CAF50",
-              color: "#fff",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              setSelectedOption(null);
-              moveToNextQuestion();
-            }}
-          >
-            Next
-          </button>
-        ) : (
-          <button
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#FF5722",
-              color: "#fff",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-            onClick={submitQuizResults}
-          >
-            Submit
-          </button>
+        {submissionStatus === "error" && (
+          <div className="quiz-error-msg">
+            Failed to submit. Please check your connection and try again.
+          </div>
         )}
       </div>
-
-      {submissionStatus && (
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "10px",
-            backgroundColor: "#FFEB3B",
-            color: "#000",
-            borderRadius: "5px",
-            fontSize: "18px",
-            fontWeight: "bold",
-            textAlign: "center",
-          }}
-        >
-          {submissionStatus}
-        </div>
-      )}
     </div>
   );
 };
