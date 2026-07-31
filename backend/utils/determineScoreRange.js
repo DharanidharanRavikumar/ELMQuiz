@@ -13,10 +13,10 @@ const determineScoreRange = (category, subCategory, score) => {
       postEducation: { High: [3, 4], Low: [1, 2] },
     },
     temperament: {
-      personallyReserved: { High: [3, 4], Low: [1, 2] },
-      selfCriticism: { High: [3, 4], Low: [1, 2] },
+      selfWorth: { High: [3, 4], Low: [1, 2] },
+      interpersonalPatience: { High: [3, 4], Low: [1, 2] },
       anxious: { High: [3, 4], Low: [1, 2] },
-      perfectionism: { High: [3, 4], Low: [1, 2] },
+      situationalConfidence: { High: [3, 4], Low: [1, 2] },
       irritability: { High: [3, 4], Low: [1, 2] },
     },
     socialSupport: {

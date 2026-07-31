@@ -50,7 +50,7 @@ function calculateCollegeReadiness(responses) {
 
 // PART-IV: Temperament Scoring
 function calculateTemperament(responses) {
-  const categories = ["personallyReserved", "selfCriticism", "anxious", "perfectionism", "irritability"];
+  const categories = ["selfWorth", "interpersonalPatience", "anxious", "situationalConfidence", "irritability"];
   const reverseIndexes = [1, 2, 4];
 
   return responses.map((score, index) => {
@@ -61,10 +61,21 @@ function calculateTemperament(responses) {
 
 // PART-V: Level of Social Support
 function calculateSocialSupport(responses) {
+  const counts = { family: 0, friends: 0, socialMedia: 0 };
+  const map = { 1: "family", 2: "friends", 3: "socialMedia" };
+
+  responses.forEach((score) => {
+    const key = map[score];
+    if (key) counts[key]++;
+  });
+
+  // 2 questions total: picked both times = High, once = Moderate, never = Low
+  const classify = (count) => (count === 2 ? "High" : count === 1 ? "Moderate" : "Low");
+
   return {
-    family: determineScoreRange("socialSupport", "family", responses[0]),
-    friends: determineScoreRange("socialSupport", "friends", responses[1]),
-    socialMedia: determineScoreRange("socialSupport", "socialMedia", responses[2]),
+    family: classify(counts.family),
+    friends: classify(counts.friends),
+    socialMedia: classify(counts.socialMedia),
   };
 }
 

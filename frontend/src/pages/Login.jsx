@@ -16,16 +16,37 @@ const Login = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
-  const handleLogin = () => {
-    if (!userId || !password || captcha !== captchaText) {
-      alert("Invalid credentials or incorrect captcha!");
+  const handleLogin = async () => {
+  if (!userId || !password || captcha !== captchaText) {
+    alert("Invalid credentials or incorrect captcha!");
+    return;
+  }
+
+  if (role === "admin") {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/admin-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      const data = await response.json();
+      if (!data.success) {
+        alert("Incorrect admin password.");
+        setCaptchaText(generateCaptcha());
+        setCaptcha("");
+        return;
+      }
+    } catch (err) {
+      alert("Could not verify admin login. Try again.");
       return;
     }
-    login(role);
-    setTimeout(() => {
-      if (role === "admin") navigate("/admin");
-      else if (role === "student") navigate("/home");
-    }, 0);
+  }
+
+  login(role);
+  setTimeout(() => {
+    if (role === "admin") navigate("/admin");
+    else if (role === "student") navigate("/home");
+  }, 0);
   };
 
   return (
@@ -36,7 +57,7 @@ const Login = () => {
 
       <div className="login-card">
         <div className="login-logo">
-          <div className="login-logo-icon">🧠</div>
+          
           <span className="login-logo-text">ELM Quiz</span>
         </div>
 
@@ -46,11 +67,11 @@ const Login = () => {
             <p className="login-subtitle">Select your role to continue</p>
             <div className="role-grid">
               <button className="role-btn" onClick={() => setRole("admin")}>
-                <span className="role-icon">🛡️</span>
+               
                 Admin
               </button>
               <button className="role-btn" onClick={() => setRole("student")}>
-                <span className="role-icon">🎓</span>
+               
                 Student
               </button>
             </div>

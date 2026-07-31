@@ -61,7 +61,7 @@ const QuizPage = () => {
       <div className="quiz-page">
         <div className="quiz-bg-orb quiz-bg-orb-1" />
         <div className="quiz-success">
-          <div className="quiz-success-icon">✅</div>
+          
           <h2 className="quiz-success-title">Assessment Complete!</h2>
           <p className="quiz-success-desc">
             Your responses have been submitted successfully. Your report is being generated and will be available shortly.

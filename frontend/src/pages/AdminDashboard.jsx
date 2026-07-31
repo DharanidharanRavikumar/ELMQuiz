@@ -36,7 +36,7 @@ const AdminDashboard = () => {
       <div className="admin-container">
         <div className="admin-header">
           <div className="admin-nav">
-            <div className="admin-logo">🧠 ELM Quiz</div>
+            <div className="admin-logo">ELM Quiz</div>
             <button className="admin-exit-btn" onClick={() => navigate("/")}>← Exit</button>
           </div>
           <div className="admin-title-section">
@@ -67,7 +67,7 @@ const AdminDashboard = () => {
           </div>
           {error && (
             <div className="admin-error">
-              <span>⚠️</span> {error}
+              <span></span> {error}
             </div>
           )}
         </div>

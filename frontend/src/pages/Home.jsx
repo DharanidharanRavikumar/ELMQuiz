@@ -12,11 +12,11 @@ const Home = () => {
 
       <nav className="home-nav">
         <div className="home-nav-logo">🧠 ELM Quiz</div>
-        <div className="home-nav-badge">Psychiatric Assessment</div>
+        <div className="home-nav-badge">Personal Insight Assessment</div>
       </nav>
 
       <main className="home-main">
-        <div className="home-tag">Evidence-Based Assessment</div>
+        <div className="home-tag">Self-Reflection Tool</div>
 
         <h1 className="home-title">
           Understand Your <br />
@@ -24,8 +24,7 @@ const Home = () => {
         </h1>
 
         <p className="home-desc">
-          A comprehensive psychiatric assessment designed to evaluate your emotional and
-          cognitive profile. Takes approximately 15–20 minutes to complete.
+          A structured self-assessment designed to reflect on your emotional patterns, learning style, and personal goals. Takes approximately 15–20 minutes to complete.
         </p>
 
         <div className="home-stats">
@@ -57,9 +56,9 @@ const Home = () => {
 
       <div className="home-cards">
         {[
-          { icon: "🔍", title: "Comprehensive", desc: "Multi-dimensional evaluation across 6 psychological domains" },
-          { icon: "📊", title: "Data-Driven", desc: "Scientifically validated scoring with detailed PDF report" },
-          { icon: "🔒", title: "Confidential", desc: "Your data is secure and handled with full privacy" },
+          { icon: "", title: "Comprehensive", desc: "Multi-dimensional evaluation across 6 psychological domains" },
+          { icon: "", title: "Data-Driven", desc: "Scientifically validated scoring with detailed PDF report" },
+          { icon: "", title: "Confidential", desc: "Your data is secure and handled with full privacy" },
         ].map((card, i) => (
           <div className="home-feature-card" key={i}>
             <div className="home-feature-icon">{card.icon}</div>

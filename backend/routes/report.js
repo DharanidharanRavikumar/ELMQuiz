@@ -53,9 +53,9 @@ const getSocialSupportDescription = (supportData, gender) => {
 
 const categoryDescriptions = {
   selfEfficacy: {
-    high: "His score on the self-efficacy measure indicates a high level of self-efficacy. He has a strong sense of self-confidence, is more capable of self-evaluation and self-awareness, and has the willingness to take risks or step outside of his comfort zone.",
-    moderate: "His score on the self-efficacy measure indicates a moderate level of self-efficacy. He will therefore be moderately confident in his capacity to achieve his objective and play a partly involved role in his academic life. He will also be aware of himself and capable of identifying the setbacks he has in life. He should attempt to assess his own potential, visualize his success, and have positive self-talk in order to better himself.",
-    low: "His score on the self-efficacy measure indicates a low level of self-efficacy. So, he avoids challenging tasks and believes that difficult tasks and situations are beyond his capabilities, only focusing on personal failings and negative outcomes. Due to low self-efficacy, he quickly loses his confidence in personal abilities.",
+    High: "His score on the self-efficacy measure indicates a high level of self-efficacy. He has a strong sense of self-confidence, is more capable of self-evaluation and self-awareness, and has the willingness to take risks or step outside of his comfort zone.",
+    Moderate: "His score on the self-efficacy measure indicates a moderate level of self-efficacy. He will therefore be moderately confident in his capacity to achieve his objective and play a partly involved role in his academic life. He will also be aware of himself and capable of identifying the setbacks he has in life. He should attempt to assess his own potential, visualize his success, and have positive self-talk in order to better himself.",
+    Low: "His score on the self-efficacy measure indicates a low level of self-efficacy. So, he avoids challenging tasks and believes that difficult tasks and situations are beyond his capabilities, only focusing on personal failings and negative outcomes. Due to low self-efficacy, he quickly loses his confidence in personal abilities.",
   },
   learningStyle: {
     all: "His scores indicate that he is efficient in all three learning styles - visual, auditory, and kinesthetic. He doesn't have any preferential way in which he absorbs, processes, comprehends, and retains information. He has widespread recognition in any classroom management strategy.",
@@ -84,22 +84,22 @@ const categoryDescriptions = {
       Low: "In post-education of college readiness, he has scored low. He is not prepared for college. To improve, he can adopt a positive outlook for his post-educational future, organize their work, create a schedule that works, and manage their study space.",
     },
   },
-  temperament: {
-    personallyReserved: {
-      High: "He has a propensity to keep his personal emotions to himself. He is partially reluctant to let friends and acquaintances get to know him too well. He has more good qualities than bad ones.",
-      Low: "He doesn't have a propensity to keep his personal emotions to himself. He is not reluctant to let friends and acquaintances get to know him too well.",
+temperament: {
+    selfWorth: {
+      High: "He has a strong sense of self-worth and generally sees more good qualities in himself than bad ones. He tends to maintain a positive self-regard even when facing setbacks.",
+      Low: "He has a limited sense of self-worth and tends to focus more on his shortcomings than his positive qualities. Building a more balanced self-view could help him recognize his strengths alongside areas for growth.",
     },
-    selfCriticism: {
-      High: "He can be quite impatient with other people and intolerant or irritable with anything that impedes or delays. His tendency to engage in negative self-evaluation results in feelings of worthlessness, failure, and guilt when expectations are not met.",
-      Low: "He cannot be quite impatient with other people. He does not have the tendency to engage in negative self-evaluation and maintains feelings of worth, optimism, and dignity.",
+    interpersonalPatience: {
+      High: "He is generally patient with other people and does not become easily frustrated or intolerant when things don't go as expected.",
+      Low: "He can be quite impatient with other people and intolerant or irritable with anything that impedes or delays him.",
     },
     anxious: {
       High: "He is anxious, worrying, and stressed. Excessive worrying may increase the risk of developing depression. When under stress, he will experience catastrophic thoughts and feel overwhelmed. He can adapt ways to manage anxiety including mindfulness, relaxation techniques, and dietary adjustments.",
       Low: "He is not anxious, worrying, and stressed. His emotions relating to relationships will not fluctuate very quickly.",
     },
-    perfectionism: {
-      High: "He is very responsible and has high standards for himself with a high commitment to tasks and duties. He feels confident and has the ability to size up and deal with any situation.",
-      Low: "He is not very responsible and does not hold high standards for himself. He will not feel confident and lacks the ability to size up and deal with challenging situations.",
+    situationalConfidence: {
+      High: "He feels confident in his ability to size up and deal with any situation, including unexpected challenges.",
+      Low: "He does not feel very confident in his ability to size up and deal with unexpected situations, and may feel underprepared when challenges arise.",
     },
     irritability: {
       High: "He has the tendency to be quick-tempered and to externalize stress by becoming snappy and irritated by little things. He has a feeling of agitation and frustration that may also be a symptom of a mental or physical health condition.",
@@ -354,7 +354,7 @@ function buildReportData(scores, gender) {
 
   // Temperament
   const tempItems = [];
-  const tempLabels = { personallyReserved: "Personally Reserved", selfCriticism: "Self-Criticism", anxious: "Anxiety Level", perfectionism: "Perfectionism", irritability: "Irritability" };
+  const tempLabels = { selfWorth: "Self-Worth", interpersonalPatience: "Interpersonal Patience", anxious: "Anxiety Level", situationalConfidence: "Situational Confidence", irritability: "Irritability" };
   scores.temperament.forEach(({ category, level }) => {
     tempItems.push({ label: tempLabels[category] || category, level, description: getDescription("temperament", category, level, gender) });
   });
@@ -431,7 +431,7 @@ router.post("/generate-report", async (req, res) => {
     pdfSections.push({ sectionTitle: "College Readiness", sectionSubtitle: "Academic preparedness across four key dimensions", items: crItems });
 
     // Temperament
-    const tempLabels = { personallyReserved: "Personally Reserved", selfCriticism: "Self-Criticism", anxious: "Anxiety & Worrying", perfectionism: "Perfectionism", irritability: "Irritability" };
+    const tempLabels = { selfWorth: "Self-Worth", interpersonalPatience: "Interpersonal Patience", anxious: "Anxiety & Worrying", situationalConfidence: "Situational Confidence", irritability: "Irritability" };
     const tempItems = [];
     scores.temperament.forEach(({ category, level }) => {
       tempItems.push({ label: tempLabels[category] || category, level, description: getDescription("temperament", category, level, gender) });

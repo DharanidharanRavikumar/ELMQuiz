@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0E1116;
+  --surface: #161B22;
+  --surface-raised: #1C2229;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+  --text: #EDEFF2;
+  --text-muted: rgba(237,239,242,0.55);
+  --text-faint: rgba(237,239,242,0.32);
+  --accent: #C9A876;
+  --accent-soft: rgba(201,168,118,0.12);
+  --accent-strong: #E0BC8A;
+  --error: #D4746B;
+  --error-soft: rgba(212,116,107,0.1);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); }

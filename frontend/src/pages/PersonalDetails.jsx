@@ -45,10 +45,10 @@ const PersonalDetails = ({ onSubmit }) => {
   };
 
   const fields = [
-    { label: "Full Name", name: "name", type: "text", placeholder: "Enter your full name", icon: "👤" },
-    { label: "Roll Number", name: "rollNumber", type: "text", placeholder: "e.g. 21CS045", icon: "🎫" },
-    { label: "12th Grade Percentage", name: "hsPercentage", type: "number", placeholder: "e.g. 87.5", icon: "📊" },
-    { label: "Future Ambition", name: "futureIdea", type: "text", placeholder: "What do you aspire to become?", icon: "🌟" },
+    { label: "Full Name", name: "name", type: "text", placeholder: "Enter your full name", icon: "" },
+    { label: "Roll Number", name: "rollNumber", type: "text", placeholder: "e.g. 21CS045", icon: "" },
+    { label: "12th Grade Percentage", name: "hsPercentage", type: "number", placeholder: "e.g. 87.5", icon: "" },
+    { label: "Future Ambition", name: "futureIdea", type: "text", placeholder: "What do you aspire to become?", icon: "" },
   ];
 
   return (

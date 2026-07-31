@@ -8,7 +8,8 @@ import PersonalDetails from "./pages/PersonalDetails";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import { QuizProvider } from "./contexts/QuizContext";
-import AuthProvider from "./contexts/AuthContext"; // ✅ Correct import
+import AuthProvider from "./contexts/AuthContext"; 
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
@@ -19,8 +20,15 @@ const App = () => {
             {/* ✅ Show login by default but allow access after login */}
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/home" element={<Home />} /> {/* ✅ Home accessible */}
+            <Route
+  path="/admin"
+  element={
+    <ProtectedRoute requiredRole="admin">
+      <AdminDashboard />
+    </ProtectedRoute>
+  }
+/>
+            <Route path="/home" element={<Home />} />
             <Route path="/gender-selection" element={<GenderSelectionPage />} />
             <Route path="/quiz" element={<QuizPage />} />
             <Route path="/personal-details" element={<PersonalDetails />} />
