@@ -1,8 +1,10 @@
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { QuizContext } from "../contexts/QuizContext";
 import "../styles/QuizPage.css";
 
 const QuizPage = () => {
+  const navigate = useNavigate();
   const {
     questions, currentQuestion, handleAnswer,
     moveToNextQuestion, moveToPreviousQuestion, responses,
@@ -80,13 +82,13 @@ const QuizPage = () => {
           <div className="quiz-success-actions">
             <button
               className="quiz-success-btn"
-              onClick={() => { window.location.href = "/my-report"; }}
+              onClick={() => navigate("/my-report")}
             >
               View My Report →
             </button>
             <button
               className="quiz-success-btn-secondary"
-              onClick={() => { window.location.href = "/login"; }}
+              onClick={() => navigate("/login")}
             >
               Return to Login
             </button>

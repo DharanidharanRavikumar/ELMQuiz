@@ -1,10 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import PersonalDetails from '../pages/PersonalDetails';
 
 const GenderSelectionPage = () => {
+  const navigate = useNavigate();
+
   const handlePersonalDetailsSubmit = (details) => {
     localStorage.setItem('personalDetails', JSON.stringify(details));
-    window.location.href = '/quiz';
+    navigate('/quiz');
   };
 
   return (
