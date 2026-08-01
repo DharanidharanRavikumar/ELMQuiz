@@ -44,12 +44,12 @@ const PersonalDetails = ({ onSubmit }) => {
     else alert("Please fix the errors before submitting.");
   };
 
-  const fields = [
-    { label: "Full Name", name: "name", type: "text", placeholder: "Enter your full name", icon: "" },
-    { label: "Roll Number", name: "rollNumber", type: "text", placeholder: "e.g. 21CS045", icon: "" },
-    { label: "12th Grade Percentage", name: "hsPercentage", type: "number", placeholder: "e.g. 87.5", icon: "" },
-    { label: "Future Ambition", name: "futureIdea", type: "text", placeholder: "What do you aspire to become?", icon: "" },
-  ];
+ const fields = [
+  { label: "Full Name", name: "name", type: "text", placeholder: "Enter your full name", hint: "Letters and spaces only" },
+  { label: "Roll Number", name: "rollNumber", type: "text", placeholder: "e.g. 21CS045", hint: "Format: 2-3 digits, 2 letters, 2-3 digits (e.g. 21CS045)" },
+  { label: "12th Grade Percentage", name: "hsPercentage", type: "number", placeholder: "e.g. 87.5", hint: "A number between 0 and 100" },
+  { label: "Future Ambition", name: "futureIdea", type: "text", placeholder: "What do you aspire to become?", hint: "At least 5 characters" },
+];
 
   return (
     <div className="pd-page">
@@ -64,27 +64,26 @@ const PersonalDetails = ({ onSubmit }) => {
         </div>
 
         <form className="pd-form" onSubmit={handleSubmit}>
-          {fields.map(({ label, name, type, placeholder, icon }) => (
-            <div className="pd-field" key={name}>
-              <label className="pd-label">
-                <span className="pd-label-icon">{icon}</span>
-                {label}
-              </label>
-              <input
-                className={`pd-input ${errors[name] ? "pd-input-error" : ""}`}
-                type={type}
-                name={name}
-                value={details[name]}
-                onChange={handleChange}
-                placeholder={placeholder}
-                required
-              />
-              {errors[name] && <p className="pd-error">{errors[name]}</p>}
-            </div>
-          ))}
+          {fields.map(({ label, name, type, placeholder, hint }) => (
+  <div className="pd-field" key={name}>
+    <label className="pd-label">{label}</label>
+    <input
+      className={`pd-input ${errors[name] ? "pd-input-error" : ""}`}
+      type={type}
+      name={name}
+      value={details[name]}
+      onChange={handleChange}
+      placeholder={placeholder}
+      required
+    />
+    {hint && !errors[name] && <p className="pd-hint">{hint}</p>}
+    {errors[name] && <p className="pd-error">{errors[name]}</p>}
+  </div>
+))}
+        
 
-          <div className="pd-field">
-            <label className="pd-label"><span className="pd-label-icon">⚧</span>Gender</label>
+         <div className="pd-field">
+  <label className="pd-label">Gender</label>
             <select className="pd-input pd-select" name="gender" value={details.gender} onChange={handleChange} required>
               <option value="">Select your gender</option>
               <option value="Male">Male</option>

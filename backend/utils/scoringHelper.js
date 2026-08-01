@@ -22,7 +22,6 @@ function calculateLearningStyle(responses) {
   if (auditory >= 4) dominantStyles.push("auditory");
   if (kinesthetic >= 4) dominantStyles.push("kinesthetic");
 
-  // ✅ Ensure correct sorting before returning
   return { 
     visual, 
     auditory, 
@@ -49,12 +48,10 @@ function calculateCollegeReadiness(responses) {
 }
 
 // PART-IV: Temperament Scoring
+// No reverse-scoring — matches original Scoring_ELM.docx (plain totals only)
 function calculateTemperament(responses) {
-  const categories = ["selfWorth", "interpersonalPatience", "anxious", "situationalConfidence", "irritability"];
-  const reverseIndexes = [1, 2, 4];
-
+  const categories = ["personallyReserved", "selfCriticism", "anxious", "perfectionism", "irritability"];
   return responses.map((score, index) => {
-    if (reverseIndexes.includes(index)) score = reverseScore(score);
     return { category: categories[index], level: determineScoreRange("temperament", categories[index], score) };
   });
 }
@@ -69,7 +66,6 @@ function calculateSocialSupport(responses) {
     if (key) counts[key]++;
   });
 
-  // 2 questions total: picked both times = High, once = Moderate, never = Low
   const classify = (count) => (count === 2 ? "High" : count === 1 ? "Moderate" : "Low");
 
   return {

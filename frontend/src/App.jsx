@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import { QuizProvider } from "./contexts/QuizContext";
 import AuthProvider from "./contexts/AuthContext"; 
+import MyReport from "./pages/MyReport";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
   }
 />
             <Route path="/home" element={<Home />} />
+            <Route path="/my-report" element={<MyReport />} />
             <Route path="/gender-selection" element={<GenderSelectionPage />} />
             <Route path="/quiz" element={<QuizPage />} />
             <Route path="/personal-details" element={<PersonalDetails />} />

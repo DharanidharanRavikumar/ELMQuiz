@@ -63,8 +63,10 @@ const Login = () => {
 
         {!role ? (
           <>
-            <h1 className="login-title">Welcome back</h1>
-            <p className="login-subtitle">Select your role to continue</p>
+            <h1 className="login-title">ELM Quiz</h1>
+<p className="login-subtitle">
+  A self-assessment tool that evaluates your learning style, temperament, and personal goals — then generates a personalized PDF report. Choose a role to continue.
+</p>
             <div className="role-grid">
               <button className="role-btn" onClick={() => setRole("admin")}>
                

@@ -10,19 +10,14 @@ const determineScoreRange = (category, subCategory, score) => {
       academicSkill: { High: [2, 2], Low: [0, 1] },
       executiveFunction: { High: [2, 2], Low: [0, 1] },
       motivationConfidence: { High: [2, 2], Low: [0, 1] },
-      postEducation: { High: [3, 4], Low: [1, 2] },
+      postEducation: { High: [3, 4], Low: [0, 2] },
     },
     temperament: {
-      selfWorth: { High: [3, 4], Low: [1, 2] },
-      interpersonalPatience: { High: [3, 4], Low: [1, 2] },
+      personallyReserved: { High: [3, 4], Low: [1, 2] },
+      selfCriticism: { High: [3, 4], Low: [1, 2] },
       anxious: { High: [3, 4], Low: [1, 2] },
-      situationalConfidence: { High: [3, 4], Low: [1, 2] },
+      perfectionism: { High: [3, 4], Low: [1, 2] },
       irritability: { High: [3, 4], Low: [1, 2] },
-    },
-    socialSupport: {
-      family: { High: [3, 4], Low: [1, 2] },
-      friends: { High: [3, 4], Low: [1, 2] },
-      socialMedia: { High: [3, 4], Low: [1, 2] },
     },
     aspiration: {
       leadership: { High: [24, 32], Moderate: [17, 23], Low: [8, 16] },
@@ -41,7 +36,6 @@ const determineScoreRange = (category, subCategory, score) => {
       console.warn(`⚠️ Warning: Subcategory "${subCategory}" not found in category "${category}".`);
       return null;
     }
-
     for (const [range, limits] of Object.entries(ranges[category][subCategory])) {
       if (score >= limits[0] && score <= limits[1]) return range;
     }
@@ -51,7 +45,7 @@ const determineScoreRange = (category, subCategory, score) => {
     }
   }
 
-  return null; // Return `null` instead of "No interpretation available" for better debugging
+  return null;
 };
 
 module.exports = determineScoreRange;

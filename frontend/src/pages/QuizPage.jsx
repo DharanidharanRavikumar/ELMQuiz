@@ -57,16 +57,40 @@ const QuizPage = () => {
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
   if (submissionStatus === "success") {
+    const personalDetails = JSON.parse(localStorage.getItem("personalDetails") || "{}");
+
     return (
       <div className="quiz-page">
-        <div className="quiz-bg-orb quiz-bg-orb-1" />
         <div className="quiz-success">
-          
           <h2 className="quiz-success-title">Assessment Complete!</h2>
           <p className="quiz-success-desc">
-            Your responses have been submitted successfully. Your report is being generated and will be available shortly.
+            Thank you, {personalDetails.name || "there"}. Your responses have been submitted
+            and your report has been generated.
           </p>
-          <div className="quiz-success-badge">Report Generated</div>
+
+          <div className="quiz-success-card">
+            <p className="quiz-success-card-label">Your Report Reference</p>
+            <p className="quiz-success-card-value">{personalDetails.rollNumber || "—"}</p>
+            <p className="quiz-success-card-note">
+              You can retrieve and download your PDF report yourself using your name or
+              roll number.
+            </p>
+          </div>
+
+          <div className="quiz-success-actions">
+            <button
+              className="quiz-success-btn"
+              onClick={() => { window.location.href = "/my-report"; }}
+            >
+              View My Report →
+            </button>
+            <button
+              className="quiz-success-btn-secondary"
+              onClick={() => { window.location.href = "/login"; }}
+            >
+              Return to Login
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -74,9 +98,6 @@ const QuizPage = () => {
 
   return (
     <div className="quiz-page">
-      <div className="quiz-bg-orb quiz-bg-orb-1" />
-      <div className="quiz-bg-orb quiz-bg-orb-2" />
-
       <div className="quiz-container">
         <div className="quiz-header">
           <div className="quiz-progress-info">

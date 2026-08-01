@@ -84,22 +84,22 @@ const categoryDescriptions = {
       Low: "In post-education of college readiness, he has scored low. He is not prepared for college. To improve, he can adopt a positive outlook for his post-educational future, organize their work, create a schedule that works, and manage their study space.",
     },
   },
-temperament: {
-    selfWorth: {
-      High: "He has a strong sense of self-worth and generally sees more good qualities in himself than bad ones. He tends to maintain a positive self-regard even when facing setbacks.",
-      Low: "He has a limited sense of self-worth and tends to focus more on his shortcomings than his positive qualities. Building a more balanced self-view could help him recognize his strengths alongside areas for growth.",
+  temperament: {
+    personallyReserved: {
+      High: "He has a propensity to keep his personal emotions to himself. He is partially reluctant to let friends and acquaintances get to know him too well. He has more good qualities than bad ones.",
+      Low: "He doesn't have a propensity to keep his personal emotions to himself. He is not reluctant to let friends and acquaintances get to know him too well.",
     },
-    interpersonalPatience: {
-      High: "He is generally patient with other people and does not become easily frustrated or intolerant when things don't go as expected.",
-      Low: "He can be quite impatient with other people and intolerant or irritable with anything that impedes or delays him.",
+    selfCriticism: {
+      High: "He can be quite impatient with other people and intolerant or irritable with anything that impedes or delays. His tendency to engage in negative self-evaluation results in feelings of worthlessness, failure, and guilt when expectations are not met.",
+      Low: "He does not have the tendency to engage in negative self-evaluation and maintains feelings of worth, optimism, and dignity.",
     },
     anxious: {
       High: "He is anxious, worrying, and stressed. Excessive worrying may increase the risk of developing depression. When under stress, he will experience catastrophic thoughts and feel overwhelmed. He can adapt ways to manage anxiety including mindfulness, relaxation techniques, and dietary adjustments.",
       Low: "He is not anxious, worrying, and stressed. His emotions relating to relationships will not fluctuate very quickly.",
     },
-    situationalConfidence: {
-      High: "He feels confident in his ability to size up and deal with any situation, including unexpected challenges.",
-      Low: "He does not feel very confident in his ability to size up and deal with unexpected situations, and may feel underprepared when challenges arise.",
+    perfectionism: {
+      High: "He is very responsible and has high standards for himself with a high commitment to tasks and duties. He feels confident and has the ability to size up and deal with any situation.",
+      Low: "He is not very responsible and does not hold high standards for himself. He will not feel confident and lacks the ability to size up and deal with challenging situations.",
     },
     irritability: {
       High: "He has the tendency to be quick-tempered and to externalize stress by becoming snappy and irritated by little things. He has a feeling of agitation and frustration that may also be a symptom of a mental or physical health condition.",
@@ -136,66 +136,54 @@ temperament: {
 // ─── PDF Helper Functions ────────────────────────────────────────────────────
 
 const COLORS = {
-  primary:    "#0A3D7A",   // dark green
-  accent:     "#185FA5",   // medium green
-  light:      "#E8F0FA",   // light green bg
-  dark:       "#060F1E",   // very dark green
+  primary:    "#14171C",
+  accent:     "#C9A876",
+  light:      "#F4EFE7",
+  dark:       "#0E1116",
   white:      "#FFFFFF",
-  text:       "#1A1A2E",
-  subtext:    "#4A5568",
-  border:     "#B8CFE8",
-  sectionBg:  "#F0F5FC",
-  tagBg:      "#D0E4F7",
-  tagText:    "#0A3D7A",
-  highColor:  "#0A3D7A",
+  text:       "#1A1A1D",
+  subtext:    "#5A5A5E",
+  border:     "#E3DCCE",
+  sectionBg:  "#FAF7F1",
+  tagBg:      "#F0E6D2",
+  tagText:    "#8A6D3B",
+  highColor:  "#8A6D3B",
   modColor:   "#7B6B00",
   lowColor:   "#8B1A1A",
-  highBg:     "#D0E4F7",
+  highBg:     "#F0E6D2",
   modBg:      "#FFF9C4",
   lowBg:      "#FDDEDE",
 };
-
 const PAGE_W = 595;
 const PAGE_H = 842;
 const MARGIN = 48;
 const CONTENT_W = PAGE_W - MARGIN * 2;
 
-// Draw page background + subtle side accent bar
 function drawPageBase(doc) {
   doc.rect(0, 0, PAGE_W, PAGE_H).fill(COLORS.white);
   doc.rect(0, 0, 5, PAGE_H).fill(COLORS.primary);
 }
 
-// Draw cover page
 function drawCover(doc, report) {
   drawPageBase(doc);
-
-  // Top header band
   doc.rect(0, 0, PAGE_W, 200).fill(COLORS.dark);
-
-  // Decorative circle top-right
   doc.circle(PAGE_W - 40, 40, 80).fillOpacity(0.08).fill(COLORS.white);
   doc.circle(PAGE_W - 40, 40, 50).fillOpacity(0.08).fill(COLORS.white);
-
-  // Logo / title area
   doc.fillOpacity(1);
   doc.fontSize(11).fillColor(COLORS.accent).font("Helvetica")
-     .text("ERODE LINGAM POLYTECHNIC COLLEGE", MARGIN, 50, { width: CONTENT_W });
+     .text("KONGUNADU ARTS AND SCIENCE COLLEGE", MARGIN, 50, { width: CONTENT_W });
   doc.fontSize(22).fillColor(COLORS.white).font("Helvetica-Bold")
-     .text("Psychiatric Assessment Report", MARGIN, 72, { width: CONTENT_W });
+     .text("Personal Insight Assessment Report", MARGIN, 72, { width: CONTENT_W });
   doc.fontSize(11).fillColor("rgba(255,255,255,0.6)").font("Helvetica")
-     .text("Comprehensive Student Psychological Evaluation", MARGIN, 104, { width: CONTENT_W });
+     .text("Comprehensive Student Self-Assessment", MARGIN, 104, { width: CONTENT_W });
 
-  // Date badge
   const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
   doc.fontSize(10).fillColor("rgba(255,255,255,0.5)").text(`Generated: ${dateStr}`, MARGIN, 130);
 
-  // Student info card
   const cardY = 220;
   const cardH = 160;
   doc.roundedRect(MARGIN, cardY, CONTENT_W, cardH, 10).fill(COLORS.sectionBg);
   doc.roundedRect(MARGIN, cardY, 5, cardH, 3).fill(COLORS.accent);
-
   doc.fontSize(10).fillColor(COLORS.subtext).font("Helvetica")
      .text("STUDENT PROFILE", MARGIN + 20, cardY + 18);
 
@@ -218,7 +206,6 @@ function drawCover(doc, report) {
     if (col > 1) { col = 0; row++; }
   });
 
-  // Assessment overview section
   const sectY = cardY + cardH + 30;
   doc.fontSize(13).fillColor(COLORS.primary).font("Helvetica-Bold")
      .text("Assessment Overview", MARGIN, sectY);
@@ -245,12 +232,10 @@ function drawCover(doc, report) {
     doc.fontSize(8).fillColor(COLORS.subtext).font("Helvetica").text(d.desc, x + 30, y + 20);
   });
 
-  // Footer
   doc.fontSize(8).fillColor(COLORS.subtext)
      .text("CONFIDENTIAL — For Academic Use Only", MARGIN, PAGE_H - 40, { width: CONTENT_W, align: "center" });
 }
 
-// Draw a section header
 function drawSectionHeader(doc, title, subtitle, y) {
   doc.rect(MARGIN, y, CONTENT_W, 42).fill(COLORS.primary);
   doc.roundedRect(MARGIN, y, 4, 42, 2).fill(COLORS.accent);
@@ -263,10 +248,8 @@ function drawSectionHeader(doc, title, subtitle, y) {
   return y + 42 + 14;
 }
 
-// Draw a result item with level badge + description
 function drawResultItem(doc, label, level, description, y, pageAddCb) {
   const MIN_H = 20;
-  // Estimate height needed
   const descLines = Math.ceil(description.length / 90) + 1;
   const blockH = Math.max(MIN_H, 16 + descLines * 13 + 24);
 
@@ -276,15 +259,11 @@ function drawResultItem(doc, label, level, description, y, pageAddCb) {
     y = MARGIN;
   }
 
-  // Card bg
   doc.roundedRect(MARGIN, y, CONTENT_W, blockH, 6).fill(COLORS.sectionBg);
   doc.roundedRect(MARGIN, y, 3, blockH, 2).fill(COLORS.accent);
-
-  // Label
   doc.fontSize(10).fillColor(COLORS.text).font("Helvetica-Bold")
      .text(label, MARGIN + 14, y + 10, { width: CONTENT_W * 0.55 });
 
-  // Level badge
   if (level) {
     const lvl = level.toLowerCase();
     let bgC = COLORS.highBg, txtC = COLORS.highColor;
@@ -298,87 +277,18 @@ function drawResultItem(doc, label, level, description, y, pageAddCb) {
        .text(level.toUpperCase(), badgeX, y + 13, { width: badgeW, align: "center" });
   }
 
-  // Description
   doc.fontSize(9).fillColor(COLORS.subtext).font("Helvetica")
      .text(description, MARGIN + 14, y + 26, { width: CONTENT_W - 28, lineGap: 2 });
 
   return y + blockH + 8;
 }
 
-// Draw footer on every page
 function addFooter(doc, pageNum, name) {
   doc.fontSize(8).fillColor(COLORS.subtext).font("Helvetica")
-     .text(`${name} — Psychiatric Assessment Report`, MARGIN, PAGE_H - 28, { width: CONTENT_W * 0.6 });
+     .text(`${name} — Personal Insight Assessment Report`, MARGIN, PAGE_H - 28, { width: CONTENT_W * 0.6 });
   doc.text(`Page ${pageNum}`, MARGIN, PAGE_H - 28, { width: CONTENT_W, align: "right" });
   doc.moveTo(MARGIN, PAGE_H - 36).lineTo(MARGIN + CONTENT_W, PAGE_H - 36)
      .strokeColor(COLORS.border).lineWidth(0.5).stroke();
-}
-
-// ─── Generate Report Text (same as before) ────────────────────────────────
-function buildReportData(scores, gender) {
-  const sections = [];
-
-  // Learning Style
-  const { dominantStyles } = scores.learningStyle;
-  // Normalize styles to lowercase, sort, build camelCase key e.g. ["Visual","Auditory"] -> "visualAuditory"
-  const normalizedStyles = dominantStyles.map(s => s.toLowerCase());
-  let learningKey;
-  if (normalizedStyles.length === 0) {
-    learningKey = "all";
-  } else if (normalizedStyles.length === 3) {
-    learningKey = "all";
-  } else if (normalizedStyles.length === 1) {
-    learningKey = normalizedStyles[0];
-  } else {
-    // Sort alphabetically then join as camelCase: first lowercase, rest capitalized
-    const sorted = normalizedStyles.sort();
-    learningKey = sorted[0] + sorted.slice(1).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join("");
-  }
-  let learningDesc = categoryDescriptions.learningStyle[learningKey] || categoryDescriptions.learningStyle["all"] || "No description available.";
-  learningDesc = learningDesc.replace(/\bHe\b/g, getPronoun(gender, "heShe"))
-                             .replace(/\bhis\b/g, getPronoun(gender, "hisHer"));
-  sections.push({
-    title: "Learning Style",
-    subtitle: "How the student best absorbs and processes information",
-    items: [{ label: `Style: ${dominantStyles.join(", ")}`, level: null, description: learningDesc }],
-  });
-
-  // College Readiness
-  const crItems = [];
-  const crLabels = { academicSkill: "Academic Skills", executiveFunction: "Executive Function", motivationConfidence: "Motivation & Confidence", postEducation: "Post-Education Readiness" };
-  Object.entries(scores.collegeReadiness).forEach(([sub, data]) => {
-    const range = data?.interpretation || "N/A";
-    crItems.push({ label: crLabels[sub] || sub, level: range, description: getDescription("collegeReadiness", sub, range, gender) });
-  });
-  sections.push({ title: "College Readiness", subtitle: "Academic preparedness across four key dimensions", items: crItems });
-
-  // Temperament
-  const tempItems = [];
-  const tempLabels = { selfWorth: "Self-Worth", interpersonalPatience: "Interpersonal Patience", anxious: "Anxiety Level", situationalConfidence: "Situational Confidence", irritability: "Irritability" };
-  scores.temperament.forEach(({ category, level }) => {
-    tempItems.push({ label: tempLabels[category] || category, level, description: getDescription("temperament", category, level, gender) });
-  });
-  sections.push({ title: "Temperament", subtitle: "Emotional and behavioral personality traits", items: tempItems });
-
-  // Social Support
-  const highSources = Object.keys(scores.socialSupport).filter(k => scores.socialSupport[k] === "High");
-  const socialDesc = getSocialSupportDescription(scores.socialSupport, gender);
-  sections.push({
-    title: "Social Support",
-    subtitle: "Primary sources of emotional and social support",
-    items: [{ label: `Primary Support: ${highSources.length > 0 ? highSources.join(", ") : "Limited"}`, level: highSources.length > 1 ? "High" : highSources.length === 1 ? "Moderate" : "Low", description: socialDesc }],
-  });
-
-  // Aspiration
-  const aspItems = [];
-  const aspLabels = { leadership: "Leadership Aspiration", educational: "Educational Aspiration", education: "Educational Aspiration", achievement: "Achievement Aspiration" };
-  Object.entries(scores.aspiration).forEach(([sub, data]) => {
-    const range = data?.interpretation || "N/A";
-    aspItems.push({ label: aspLabels[sub] || sub, level: range, description: getDescription("aspiration", sub, range, gender) });
-  });
-  sections.push({ title: "Aspiration", subtitle: "Goals, ambitions, and future-oriented motivations", items: aspItems });
-
-  return sections;
 }
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
@@ -398,22 +308,30 @@ router.post("/generate-report", async (req, res) => {
       aspiration:       scoringHelper.calculateAspiration(responses.part6),
     };
 
-    // Build PDF sections as structured data
     const pdfSections = [];
 
-    // Self Efficacy
-    const seRange = scores.selfEfficacy?.interpretation || "moderate";
+    const seRange = scores.selfEfficacy?.interpretation || "Moderate";
     pdfSections.push({
       sectionTitle: "Self-Efficacy", sectionSubtitle: "Belief in personal ability to succeed",
       items: [{ label: "Self-Efficacy Level", level: seRange, description: getDescription("selfEfficacy", null, seRange, gender) }]
     });
 
-    // Learning Style
     const domStyles = scores.learningStyle?.dominantStyles || [];
     const normStyles = domStyles.map(s => s.toLowerCase());
-    let lKey = normStyles.length === 0 || normStyles.length === 3 ? "all"
-      : normStyles.length === 1 ? normStyles[0]
-      : normStyles.sort()[0] + normStyles.sort().slice(1).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join("");
+    const learningStyleMap = {
+      "auditory,kinesthetic": "auditoryKinesthetic",
+      "auditory,visual": "visualAuditory",
+      "kinesthetic,visual": "visualKinesthetic",
+    };
+    let lKey;
+    if (normStyles.length === 0 || normStyles.length === 3) {
+      lKey = "all";
+    } else if (normStyles.length === 1) {
+      lKey = normStyles[0];
+    } else {
+      const sortedKey = [...normStyles].sort().join(",");
+      lKey = learningStyleMap[sortedKey] || "all";
+    }
     let lDesc = categoryDescriptions.learningStyle[lKey] || categoryDescriptions.learningStyle["all"];
     lDesc = lDesc.replace(/\bHe\b/g, getPronoun(gender, "heShe")).replace(/\bhis\b/g, getPronoun(gender, "hisHer"));
     pdfSections.push({
@@ -421,7 +339,6 @@ router.post("/generate-report", async (req, res) => {
       items: [{ label: `Style: ${domStyles.join(", ") || "All Styles"}`, level: null, description: lDesc }]
     });
 
-    // College Readiness
     const crLabels = { academicSkill: "Academic Skills", executiveFunction: "Executive Function", motivationConfidence: "Motivation & Confidence", postEducation: "Post-Education Readiness" };
     const crItems = [];
     Object.entries(scores.collegeReadiness).forEach(([sub, data]) => {
@@ -430,15 +347,13 @@ router.post("/generate-report", async (req, res) => {
     });
     pdfSections.push({ sectionTitle: "College Readiness", sectionSubtitle: "Academic preparedness across four key dimensions", items: crItems });
 
-    // Temperament
-    const tempLabels = { selfWorth: "Self-Worth", interpersonalPatience: "Interpersonal Patience", anxious: "Anxiety & Worrying", situationalConfidence: "Situational Confidence", irritability: "Irritability" };
+    const tempLabels = { personallyReserved: "Personally Reserved", selfCriticism: "Self-Criticism", anxious: "Anxiety & Worrying", perfectionism: "Perfectionism", irritability: "Irritability" };
     const tempItems = [];
     scores.temperament.forEach(({ category, level }) => {
       tempItems.push({ label: tempLabels[category] || category, level, description: getDescription("temperament", category, level, gender) });
     });
     pdfSections.push({ sectionTitle: "Temperament", sectionSubtitle: "Emotional and behavioral personality traits", items: tempItems });
 
-    // Social Support
     const highSources = Object.keys(scores.socialSupport).filter(k => scores.socialSupport[k] === "High");
     const sourceLabel = highSources.length > 0 ? highSources.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(", ") : "Limited Support";
     const socialLevel = highSources.length >= 2 ? "High" : highSources.length === 1 ? "Moderate" : "Low";
@@ -447,7 +362,6 @@ router.post("/generate-report", async (req, res) => {
       items: [{ label: `Primary Support: ${sourceLabel}`, level: socialLevel, description: getSocialSupportDescription(scores.socialSupport, gender) }]
     });
 
-    // Aspiration
     const aspLabels = { leadership: "Leadership Aspiration", educational: "Educational Aspiration", education: "Educational Aspiration", achievement: "Achievement Aspiration" };
     const aspItems = [];
     Object.entries(scores.aspiration).forEach(([sub, data]) => {
@@ -457,14 +371,13 @@ router.post("/generate-report", async (req, res) => {
     });
     pdfSections.push({ sectionTitle: "Aspiration", sectionSubtitle: "Goals, ambitions, and future-oriented motivations", items: aspItems });
 
-    // Save to MongoDB — store sections as JSON for PDF, plain text for readability
     let reportText = `Report for ${name}, Roll No: ${rollNumber}\nGender: ${gender}\n`;
     reportText += `First Graduate: ${isFirstGraduate ? "Yes" : "No"}\n`;
     reportText += `12th Grade Percentage: ${hsPercentage}%\nFuture Ambition: ${futureIdea}\n`;
 
     const newReport = new Report({
       name, rollNumber, gender, isFirstGraduate, hsPercentage, futureIdea,
-      generatedReport: JSON.stringify(pdfSections), // store sections as JSON
+      generatedReport: JSON.stringify(pdfSections),
     });
     await newReport.save();
 
@@ -484,10 +397,12 @@ router.get("/saved-reports", async (req, res) => {
   }
 });
 
+// Returns the most RECENT matching report if roll number/name has duplicates
 router.get("/get-report", async (req, res) => {
   const { query } = req.query;
   try {
-    const report = await Report.findOne({ $or: [{ name: query }, { rollNumber: query }] });
+    const report = await Report.findOne({ $or: [{ name: query }, { rollNumber: query }] })
+      .sort({ createdAt: -1 });
     if (!report) return res.status(404).json({ message: "Report not found" });
     res.json(report);
   } catch (error) {
@@ -495,7 +410,6 @@ router.get("/get-report", async (req, res) => {
   }
 });
 
-// ─── Professional PDF Download ────────────────────────────────────────────────
 router.get("/download/:id", async (req, res) => {
   try {
     const report = await Report.findById(req.params.id);
@@ -506,18 +420,15 @@ router.get("/download/:id", async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename=${report.name.replace(/\s+/g, "_")}_Report.pdf`);
     doc.pipe(res);
 
-    // ── PAGE 1: Cover ──
     drawCover(doc, report);
     addFooter(doc, 1, report.name);
 
-    // ── PAGE 2+: Detailed Results using saved scores ──
     doc.addPage();
     drawPageBase(doc);
 
     let y = MARGIN;
     let pageNum = 2;
 
-    // Helper to start new page if needed
     const checkPage = (needed) => {
       if (y + needed > PAGE_H - 60) {
         addFooter(doc, pageNum, report.name);
@@ -528,26 +439,22 @@ router.get("/download/:id", async (req, res) => {
       }
     };
 
-    // Section title banner
     doc.rect(MARGIN, y, CONTENT_W, 50).fill(COLORS.primary);
     doc.fontSize(16).fillColor(COLORS.white).font("Helvetica-Bold")
        .text("Detailed Assessment Results", MARGIN + 16, y + 10, { width: CONTENT_W - 32 });
     doc.fontSize(9).fillColor("rgba(255,255,255,0.65)").font("Helvetica")
-       .text("Individual scores and interpretations across all six psychological domains", MARGIN + 16, y + 32, { width: CONTENT_W - 32 });
+       .text("Individual scores and interpretations across all six domains", MARGIN + 16, y + 32, { width: CONTENT_W - 32 });
     y += 64;
 
-    // Load structured sections from MongoDB (stored as JSON)
     let pdfSections = [];
     try {
       const parsed = JSON.parse(report.generatedReport);
       if (Array.isArray(parsed)) pdfSections = parsed;
     } catch(e) {
-      // Old record - plain text fallback
       pdfSections = [];
     }
 
     if (pdfSections.length > 0) {
-      // Render each section with header + items
       pdfSections.forEach(section => {
         checkPage(80);
         y = drawSectionHeader(doc, section.sectionTitle, section.sectionSubtitle, y);
@@ -557,7 +464,6 @@ router.get("/download/:id", async (req, res) => {
         });
       });
     } else {
-      // Fallback for old reports - plain text
       const lines = (report.generatedReport || "").split("\n").filter(l => l.trim());
       lines.forEach(line => {
         checkPage(30);
@@ -566,20 +472,17 @@ router.get("/download/:id", async (req, res) => {
       });
     }
 
-        // ── Final Page: Summary ──
     addFooter(doc, pageNum, report.name);
     doc.addPage();
     drawPageBase(doc);
     pageNum++;
 
-    // Summary banner
     doc.rect(MARGIN, MARGIN, CONTENT_W, 50).fill(COLORS.dark);
     doc.fontSize(16).fillColor(COLORS.white).font("Helvetica-Bold")
        .text("Report Summary", MARGIN + 16, MARGIN + 14, { width: CONTENT_W - 32 });
 
     y = MARGIN + 70;
 
-    // Closing note card
     doc.roundedRect(MARGIN, y, CONTENT_W, 130).fill(COLORS.light);
     doc.roundedRect(MARGIN, y, 4, 130, 2).fill(COLORS.primary);
     doc.fontSize(12).fillColor(COLORS.primary).font("Helvetica-Bold")
@@ -592,20 +495,18 @@ router.get("/download/:id", async (req, res) => {
 
     y += 150;
 
-    // Sign-off
     doc.fontSize(11).fillColor(COLORS.text).font("Helvetica-Bold")
        .text("Prepared by:", MARGIN, y);
     doc.fontSize(11).fillColor(COLORS.subtext).font("Helvetica")
-       .text("ELM Quiz Assessment System — Erode Lingam Polytechnic College", MARGIN, y + 16);
+       .text("ELM Quiz Assessment System — Kongunadu Arts and Science College", MARGIN, y + 16);
     doc.fontSize(10).fillColor(COLORS.subtext)
        .text(`Date: ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`, MARGIN, y + 32);
 
-    // Horizontal rule
     doc.moveTo(MARGIN, y + 55).lineTo(MARGIN + CONTENT_W, y + 55)
        .strokeColor(COLORS.border).lineWidth(0.5).stroke();
 
     doc.fontSize(8).fillColor(COLORS.subtext)
-       .text("© ELM Quiz — Psychiatric Assessment Platform. All rights reserved.", MARGIN, y + 65, { width: CONTENT_W, align: "center" });
+       .text("© ELM Quiz — Personal Insight Assessment Platform. All rights reserved.", MARGIN, y + 65, { width: CONTENT_W, align: "center" });
 
     addFooter(doc, pageNum, report.name);
 

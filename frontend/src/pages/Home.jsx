@@ -1,5 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+
+import { useNavigate, Link } from "react-router-dom";
+
 import "../styles/Home.css";
 
 const Home = () => {
@@ -10,10 +12,15 @@ const Home = () => {
       <div className="home-bg-orb home-bg-orb-1" />
       <div className="home-bg-orb home-bg-orb-2" />
 
-      <nav className="home-nav">
-        <div className="home-nav-logo">🧠 ELM Quiz</div>
-        <div className="home-nav-badge">Personal Insight Assessment</div>
-      </nav>
+     <nav className="home-nav">
+  <div className="home-nav-logo">ELM Quiz</div>
+  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+    <Link to="/my-report" style={{ fontSize: "12.5px", color: "var(--text-muted)", textDecoration: "none" }}>
+      Check a Report
+    </Link>
+    <div className="home-nav-badge">Personal Insight Assessment</div>
+  </div>
+</nav>
 
       <main className="home-main">
         <div className="home-tag">Self-Reflection Tool</div>
