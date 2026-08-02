@@ -77,7 +77,9 @@
   width: 100%;
 }
 
-.quiz-option:hover { border-color: var(--border-strong); color: var(--text); }
+@media (hover: hover) and (pointer: fine) {
+  .quiz-option:hover { border-color: var(--border-strong); color: var(--text); }
+}
 
 .quiz-option.selected {
   border-color: var(--accent);
