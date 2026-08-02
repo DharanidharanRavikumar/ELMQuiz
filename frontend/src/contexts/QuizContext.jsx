@@ -7,16 +7,14 @@ export const QuizProvider = ({ children }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState({});
 
-  const handleAnswer = (points, part) => {
-    setResponses((prev) => {
-      // Ensure that the part exists in the responses object
-      const updatedPart = prev[part] ? [...prev[part], points] : [points];
-      return {
-        ...prev,
-        [part]: updatedPart,
-      };
-    });
-    moveToNextQuestion();
+ const handleAnswer = (points, part) => {
+  setResponses((prev) => {
+    const updatedPart = prev[part] ? [...prev[part], points] : [points];
+    return {
+      ...prev,
+      [part]: updatedPart,
+    };
+  });
   };
 
   const moveToNextQuestion = () => {

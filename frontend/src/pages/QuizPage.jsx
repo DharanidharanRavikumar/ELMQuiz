@@ -20,10 +20,14 @@ const QuizPage = () => {
     setSelectedOption(null);
   }, [currentQuestion]);
 
-  const handleOptionClick = (score, part, index) => {
-    setSelectedOption(index);
-    handleAnswer(score, part);
-  };
+ const handleOptionClick = (score, part, index) => {
+  if (selectedOption !== null) return; // ignore extra taps while transitioning
+  setSelectedOption(index);
+  handleAnswer(score, part);
+  setTimeout(() => {
+    moveToNextQuestion();
+  }, 350);
+};
 
   const submitQuizResults = async () => {
     setIsSubmitting(true);
