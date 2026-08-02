@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { QuizContext } from "../contexts/QuizContext";
 import "../styles/QuizPage.css";
@@ -13,6 +13,12 @@ const QuizPage = () => {
   const [submissionStatus, setSubmissionStatus] = useState("");
   const [selectedOption, setSelectedOption] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const storedName = JSON.parse(localStorage.getItem("personalDetails") || "{}").name || "there";
+
+  useEffect(() => {
+    setSelectedOption(null);
+  }, [currentQuestion]);
 
   const handleOptionClick = (score, part, index) => {
     setSelectedOption(index);
@@ -57,6 +63,7 @@ const QuizPage = () => {
 
   const questionData = questions[currentQuestion];
   const progress = ((currentQuestion + 1) / questions.length) * 100;
+  const partNumber = questionData.part.replace(/[^0-9]/g, "");
 
   if (submissionStatus === "success") {
     const personalDetails = JSON.parse(localStorage.getItem("personalDetails") || "{}");
@@ -109,7 +116,7 @@ const QuizPage = () => {
           <div className="quiz-progress-track">
             <div className="quiz-progress-fill" style={{ width: `${progress}%` }} />
           </div>
-          <div className="quiz-part-tag">Part {questionData.part}</div>
+          <div className="quiz-part-tag">Part {partNumber}</div>
         </div>
 
         <div className="quiz-question-card">
@@ -132,6 +139,14 @@ const QuizPage = () => {
           </div>
         </div>
 
+        {isSubmitting && (
+          <div className="quiz-waiting-msg">
+            <span className="quiz-spinner" />
+            Hang tight, {storedName} — this demo runs on a free hosting tier, so the
+            server can take up to 40 seconds to wake up. Your report is being generated now.
+          </div>
+        )}
+
         <div className="quiz-nav">
           <button
             className={`quiz-nav-btn ${currentQuestion === 0 ? "disabled" : ""}`}
@@ -144,7 +159,7 @@ const QuizPage = () => {
           {currentQuestion < questions.length - 1 ? (
             <button
               className="quiz-nav-btn quiz-nav-next"
-              onClick={() => { setSelectedOption(null); moveToNextQuestion(); }}
+              onClick={moveToNextQuestion}
             >
               Next →
             </button>
