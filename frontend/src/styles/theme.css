@@ -20,6 +20,15 @@
   --font-display: 'Fraunces', serif;
   --font-body: 'Inter', sans-serif;
 }
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: var(--bg); }
