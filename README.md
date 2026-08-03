@@ -11,7 +11,7 @@
 
 🔗 **[elm-quiz-epk9.vercel.app](https://elm-quiz-epk9.vercel.app)**
 
-**Demo Admin access** — User ID: `demo` · Password: `[your demo password]`
+**Demo Admin access** — User ID: `demo` · Password: `Demo@2025`
 *(Anyone can also self-serve their own report after completing the assessment — no login required, via "Check a Report.")*
 
 > ⏳ First request may take 30–50 seconds. The backend runs on a free hosting tier that sleeps after inactivity — subsequent requests are instant.
@@ -22,10 +22,12 @@
 
 | | |
 |---|---|
-| ![Home](./docs/screenshots/home.png) | ![Quiz](./docs/screenshots/quiz.png) |
-| **Home** | **Assessment** |
-| ![Admin](./docs/screenshots/admin.png) | ![My Report](./docs/screenshots/my-report.png) |
-| **Admin Dashboard** | **Self-Service Report Lookup** |
+| ![Login](./docs/screenshots/login.png) | ![Home](./docs/screenshots/home.png) |
+| **Login** | **Home** |
+| ![Quiz](./docs/screenshots/quiz.png) | ![Admin](./docs/screenshots/admin.png) |
+| **Assessment** | **Admin Dashboard** |
+| ![My Report](./docs/screenshots/my-report.png) | |
+| **Self-Service Report Lookup** | |
 
 📄 [View a sample generated PDF report](./docs/sample-report.pdf)
 
