@@ -5,16 +5,13 @@ export const QuizContext = createContext();
 
 export const QuizProvider = ({ children }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [responses, setResponses] = useState({});
+  const [responses, setResponses] = useState({}); // { questionId: score }
 
- const handleAnswer = (points, part) => {
-  setResponses((prev) => {
-    const updatedPart = prev[part] ? [...prev[part], points] : [points];
-    return {
+  const handleAnswer = (questionId, score) => {
+    setResponses((prev) => ({
       ...prev,
-      [part]: updatedPart,
-    };
-  });
+      [questionId]: score,
+    }));
   };
 
   const moveToNextQuestion = () => {

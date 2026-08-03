@@ -15,32 +15,45 @@ const QuizPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const storedName = JSON.parse(localStorage.getItem("personalDetails") || "{}").name || "there";
+  const questionData = questions[currentQuestion];
 
+  // Restore the previously chosen option (if this question was already answered)
   useEffect(() => {
-    setSelectedOption(null);
+    const savedScore = responses[questionData.id];
+    if (savedScore !== undefined) {
+      const matchIndex = questionData.options.findIndex((opt) => opt.score === savedScore);
+      setSelectedOption(matchIndex !== -1 ? matchIndex : null);
+    } else {
+      setSelectedOption(null);
+    }
   }, [currentQuestion]);
 
- const handleOptionClick = (score, part, index) => {
-  if (selectedOption !== null) return; // ignore extra taps while transitioning
-  setSelectedOption(index);
-  handleAnswer(score, part);
-  setTimeout(() => {
-    moveToNextQuestion();
-  }, 350);
-};
+  const handleOptionClick = (score, index) => {
+    setSelectedOption(index);
+    handleAnswer(questionData.id, score);
+    setTimeout(() => {
+      moveToNextQuestion();
+    }, 350);
+  };
 
   const submitQuizResults = async () => {
     setIsSubmitting(true);
     try {
       const personalDetails = JSON.parse(localStorage.getItem("personalDetails"));
-      const formattedResponses = {
-        part1: responses.part1 || [], part2: responses.part2 || [],
-        part3: responses.part3 || [], part4: responses.part4 || [],
-        part5: responses.part5 || [], part6: responses.part6 || [],
-      };
+
+      // Rebuild per-part score arrays from the id-keyed responses, in original question order
+      const formattedResponses = { part1: [], part2: [], part3: [], part4: [], part5: [], part6: [] };
+      questions.forEach((q) => {
+        const partKey = q.part;
+        if (formattedResponses[partKey] && responses[q.id] !== undefined) {
+          formattedResponses[partKey].push(responses[q.id]);
+        }
+      });
+
       if (formattedResponses.part6.length > 24) {
         formattedResponses.part6 = formattedResponses.part6.slice(0, 24);
       }
+
       const payload = {
         name: personalDetails.name,
         rollNumber: personalDetails.rollNumber,
@@ -65,9 +78,9 @@ const QuizPage = () => {
     }
   };
 
-  const questionData = questions[currentQuestion];
   const progress = ((currentQuestion + 1) / questions.length) * 100;
   const partNumber = questionData.part.replace(/[^0-9]/g, "");
+  const isCurrentAnswered = responses[questionData.id] !== undefined;
 
   if (submissionStatus === "success") {
     const personalDetails = JSON.parse(localStorage.getItem("personalDetails") || "{}");
@@ -91,16 +104,10 @@ const QuizPage = () => {
           </div>
 
           <div className="quiz-success-actions">
-            <button
-              className="quiz-success-btn"
-              onClick={() => navigate("/my-report")}
-            >
+            <button className="quiz-success-btn" onClick={() => navigate("/my-report")}>
               View My Report →
             </button>
-            <button
-              className="quiz-success-btn-secondary"
-              onClick={() => navigate("/login")}
-            >
+            <button className="quiz-success-btn-secondary" onClick={() => navigate("/login")}>
               Return to Login
             </button>
           </div>
@@ -120,26 +127,11 @@ const QuizPage = () => {
           <div className="quiz-progress-track">
             <div className="quiz-progress-fill" style={{ width: `${progress}%` }} />
           </div>
-          <div className="quiz-part-tag">Part {partNumber}</div>
-        </div>
-
-        <div className="quiz-question-card">
-          <h2 className="quiz-question-text">{questionData.question}</h2>
-
-          <div className="quiz-options">
-            {questionData.options.map((option, index) => (
-              <button
-                key={index}
-                className={`quiz-option ${selectedOption === index ? "selected" : ""}`}
-                onClick={() => handleOptionClick(option.score, questionData.part, index)}
-              >
-                <span className="quiz-option-letter">
-                  {String.fromCharCode(65 + index)}
-                </span>
-                <span className="quiz-option-text">{option.text}</span>
-                {selectedOption === index && <span className="quiz-option-check">✓</span>}
-              </button>
-            ))}
+          <div className="quiz-header-row">
+            <div className="quiz-part-tag">Part {partNumber}</div>
+            <div className={`quiz-status-tag ${isCurrentAnswered ? "answered" : "unanswered"}`}>
+              {isCurrentAnswered ? "✓ Answered" : "Not answered yet"}
+            </div>
           </div>
         </div>
 
@@ -151,6 +143,26 @@ const QuizPage = () => {
           </div>
         )}
 
+        <div className="quiz-question-card">
+          <h2 className="quiz-question-text">{questionData.question}</h2>
+
+          <div className="quiz-options">
+            {questionData.options.map((option, index) => (
+              <button
+                key={index}
+                className={`quiz-option ${selectedOption === index ? "selected" : ""}`}
+                onClick={() => handleOptionClick(option.score, index)}
+              >
+                <span className="quiz-option-letter">
+                  {String.fromCharCode(65 + index)}
+                </span>
+                <span className="quiz-option-text">{option.text}</span>
+                {selectedOption === index && <span className="quiz-option-check">✓</span>}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="quiz-nav">
           <button
             className={`quiz-nav-btn ${currentQuestion === 0 ? "disabled" : ""}`}
@@ -161,10 +173,7 @@ const QuizPage = () => {
           </button>
 
           {currentQuestion < questions.length - 1 ? (
-            <button
-              className="quiz-nav-btn quiz-nav-next"
-              onClick={moveToNextQuestion}
-            >
+            <button className="quiz-nav-btn quiz-nav-next" onClick={moveToNextQuestion}>
               Next →
             </button>
           ) : (
