@@ -22,10 +22,12 @@
 
 | | |
 |---|---|
-| ![Home](./docs/screenshots/home.png) | ![Quiz](./docs/screenshots/quiz.png) |
-| **Home** | **Assessment** |
-| ![Admin](./docs/screenshots/admin.png) | ![My Report](./docs/screenshots/my-report.png) |
-| **Admin Dashboard** | **Self-Service Report Lookup** |
+| ![Login](./docs/screenshots/login.png) | ![Home](./docs/screenshots/home.png) |
+| **Login** | **Home** |
+| ![Quiz](./docs/screenshots/quiz.png) | ![Admin](./docs/screenshots/admin.png) |
+| **Assessment** | **Admin Dashboard** |
+| ![My Report](./docs/screenshots/my-report.png) | |
+| **Self-Service Report Lookup** | |
 
 📄 [View a sample generated PDF report](./docs/sample-report.pdf)
 
